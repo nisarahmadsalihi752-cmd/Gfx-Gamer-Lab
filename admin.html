@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — GFX Gamer Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--neon:#00ffe7;--red:#ff2d55;--gold:#ffd700;--bg:#07090d;--card:#0d1117;--border:#1a2535;--green:#00ff88;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:#cdd9e5;font-family:'Exo 2',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,231,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,231,0.02) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+
+/* LOGIN */
+#loginPage{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.login-box{background:var(--card);border:1px solid var(--border);padding:40px 30px;width:90%;max-width:380px;text-align:center;}
+.login-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--neon);margin-bottom:6px;}
+.login-sub{font-size:12px;color:#445566;letter-spacing:2px;margin-bottom:28px;}
+.login-input{width:100%;background:#0a0f14;border:1px solid var(--border);color:#cdd9e5;font-family:'Exo 2',sans-serif;font-size:14px;padding:12px 14px;margin-bottom:12px;outline:none;transition:border 0.2s;}
+.login-input:focus{border-color:var(--neon);}
+.login-btn{width:100%;background:rgba(0,255,231,0.1);border:1px solid var(--neon);color:var(--neon);font-family:'Orbitron',monospace;font-size:12px;letter-spacing:2px;padding:12px;cursor:pointer;transition:all 0.2s;}
+.login-btn:hover{background:rgba(0,255,231,0.2);}
+.login-err{color:var(--red);font-size:12px;margin-top:10px;display:none;}
+
+/* ADMIN LAYOUT */
+#adminPage{display:none;position:relative;z-index:10;}
+.admin-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.admin-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--neon);}
+.logout-btn{background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);color:var(--red);font-family:'Exo 2',sans-serif;font-size:12px;padding:6px 14px;cursor:pointer;transition:all 0.2s;}
+.logout-btn:hover{background:rgba(255,45,85,0.2);}
+
+/* TABS */
+.admin-nav{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--card);}
+.anav-btn{background:transparent;border:none;border-bottom:2px solid transparent;color:#667788;font-family:'Exo 2',sans-serif;font-size:13px;padding:14px 18px;cursor:pointer;transition:all 0.2s;}
+.anav-btn:hover,.anav-btn.active{color:var(--neon);border-bottom-color:var(--neon);}
+
+.admin-main{max-width:700px;margin:0 auto;padding:24px 16px;}
+.asection{display:none;}.asection.active{display:block;}
+
+/* SECTION TITLE */
+.asec-title{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:2px;color:var(--neon);margin-bottom:18px;text-transform:uppercase;}
+
+/* FORM */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:12px;letter-spacing:1px;color:#667788;text-transform:uppercase;margin-bottom:6px;display:block;}
+.form-input,.form-textarea,.form-select{width:100%;background:#0a0f14;border:1px solid var(--border);color:#cdd9e5;font-family:'Exo 2',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border 0.2s;resize:vertical;}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--neon);}
+.form-textarea{min-height:80px;}
+.form-select{cursor:pointer;}
+
+/* BUTTONS */
+.btn-add{background:rgba(0,255,136,0.1);border:1px solid var(--green);color:var(--green);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;padding:11px 22px;cursor:pointer;transition:all 0.2s;width:100%;margin-top:6px;}
+.btn-add:hover{background:rgba(0,255,136,0.2);}
+.btn-save{background:rgba(0,255,231,0.1);border:1px solid var(--neon);color:var(--neon);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;padding:11px 22px;cursor:pointer;transition:all 0.2s;width:100%;margin-top:6px;}
+.btn-save:hover{background:rgba(0,255,231,0.2);}
+.btn-del{background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);color:var(--red);font-size:12px;padding:5px 12px;cursor:pointer;transition:all 0.2s;border-radius:2px;}
+.btn-del:hover{background:rgba(255,45,85,0.25);}
+
+/* ITEMS LIST */
+.items-title{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:#445566;text-transform:uppercase;margin:24px 0 12px;}
+.item-row{background:#0a0f14;border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.item-info{flex:1;min-width:0;}
+.item-title-text{font-family:'Orbitron',monospace;font-size:12px;color:#dde8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-meta{font-size:11px;color:#445566;margin-top:3px;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:24px 0;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#000;font-family:'Orbitron',monospace;font-size:12px;letter-spacing:1px;padding:12px 20px;z-index:9999;display:none;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-title">🔐 ADMIN LOGIN</div>
+    <div class="login-sub">GFX GAMER LAB</div>
+    <input class="login-input" type="email" id="loginEmail" placeholder="Email" value=""/>
+    <input class="login-input" type="password" id="loginPass" placeholder="Password" value=""/>
+    <button class="login-btn" onclick="doLogin()">LOGIN →</button>
+    <div class="login-err" id="loginErr">Wrong email or password!</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminPage">
+  <div class="admin-header">
+    <div class="admin-logo">⚙️ GFX GAMER LAB — ADMIN</div>
+    <button class="logout-btn" onclick="doLogout()">LOGOUT</button>
+  </div>
+
+  <div class="admin-nav">
+    <button class="anav-btn active" onclick="showATab('posts',this)">📦 Posts</button>
+    <button class="anav-btn" onclick="showATab('videos',this)">▶️ Videos</button>
+    <button class="anav-btn" onclick="showATab('settings',this)">⚙️ Settings</button>
+  </div>
+
+  <div class="admin-main">
+
+    <!-- POSTS -->
+    <div id="atab-posts" class="asection active">
+      <div class="asec-title">Add New Post</div>
+
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input class="form-input" id="pTitle" placeholder="e.g. 120 FPS Config v3.9"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="pDesc" placeholder="Short description of this post..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Download Link</label>
+        <input class="form-input" id="pLink" placeholder="https://mediafire.com/..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Thumbnail Image URL</label>
+        <input class="form-input" id="pThumb" placeholder="https://i.imgur.com/... (image link)"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input class="form-input" id="pCat" placeholder="e.g. Configs, Tools, Updates"/>
+      </div>
+      <button class="btn-add" onclick="addPost()">+ ADD POST</button>
+
+      <div class="divider"></div>
+      <div class="items-title">All Posts (newest first)</div>
+      <div id="postItems"><div style="color:#445566;font-size:13px;">Loading...</div></div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div id="atab-videos" class="asection">
+      <div class="asec-title">Add Tutorial Video</div>
+
+      <div class="form-group">
+        <label class="form-label">Video Title *</label>
+        <input class="form-input" id="vTitle" placeholder="e.g. How to install config"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">YouTube Link *</label>
+        <input class="form-input" id="vLink" placeholder="https://youtube.com/watch?v=..."/>
+      </div>
+      <button class="btn-add" onclick="addVideo()">+ ADD VIDEO</button>
+
+      <div class="divider"></div>
+      <div class="items-title">All Videos</div>
+      <div id="videoItems"><div style="color:#445566;font-size:13px;">Loading...</div></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="atab-settings" class="asection">
+      <div class="asec-title">Site Settings</div>
+
+      <div class="form-group">
+        <label class="form-label">Site Title</label>
+        <input class="form-input" id="sTitle" placeholder="GFX GAMER LAB"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Profile Image URL</label>
+        <input class="form-input" id="sProfile" placeholder="https://... (your profile image link)"/>
+      </div>
+
+      <div class="divider"></div>
+      <div class="asec-title">Social Links</div>
+
+      <div class="form-group">
+        <label class="form-label">📡 Telegram</label>
+        <input class="form-input" id="sTg" placeholder="https://t.me/gfxgamerlab"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">▶️ YouTube</label>
+        <input class="form-input" id="sYt" placeholder="https://youtube.com/@..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">💬 WhatsApp</label>
+        <input class="form-input" id="sWa" placeholder="https://wa.me/..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📘 Facebook</label>
+        <input class="form-input" id="sFb" placeholder="https://facebook.com/..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🎵 TikTok</label>
+        <input class="form-input" id="sTt" placeholder="https://tiktok.com/@..."/>
+      </div>
+
+      <div class="divider"></div>
+      <div class="asec-title">Ads Code</div>
+      <div class="form-group">
+        <label class="form-label">Ad Code (Adsterra / Google AdSense)</label>
+        <textarea class="form-textarea" id="sAds" placeholder="Paste your ad script code here..." style="min-height:120px;font-family:monospace;font-size:12px;"></textarea>
+      </div>
+
+      <button class="btn-save" onclick="saveSettings()">💾 SAVE ALL SETTINGS</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Saved!</div>
+
+<script>
+const SUPABASE_URL='https://clvmcoaufhmqkflolmtw.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsdm1jb2F1ZmhtcWtmbG9sbXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MDQyNzAsImV4cCI6MjA4ODQ4MDI3MH0.kdua1_V2WCVAM7BoEODP8jGIq1NJqQ4T0BwHwAxlDc4';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// ── LOGIN ──
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value.trim();
+  const{error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){
+    document.getElementById('loginErr').style.display='block';
+  } else {
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminPage').style.display='block';
+    loadPosts();loadVideos();loadSettingsForm();
+  }
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+// Enter key login
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ── TABS ──
+function showATab(name,btn){
+  document.querySelectorAll('.asection').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.anav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('atab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── TOAST ──
+function showToast(msg='✅ Saved!'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',2500);
+}
+
+// ── POSTS ──
+async function addPost(){
+  const title=document.getElementById('pTitle').value.trim();
+  if(!title){alert('Title is required!');return;}
+  const{error}=await sb.from('posts').insert({
+    title,
+    description:document.getElementById('pDesc').value.trim(),
+    link:document.getElementById('pLink').value.trim(),
+    thumbnail:document.getElementById('pThumb').value.trim(),
+    category:document.getElementById('pCat').value.trim()
+  });
+  if(error){alert('Error: '+error.message);return;}
+  document.getElementById('pTitle').value='';
+  document.getElementById('pDesc').value='';
+  document.getElementById('pLink').value='';
+  document.getElementById('pThumb').value='';
+  document.getElementById('pCat').value='';
+  showToast('✅ Post Added!');
+  loadPosts();
+}
+
+async function loadPosts(){
+  const{data}=await sb.from('posts').select('*').order('created_at',{ascending:false});
+  const el=document.getElementById('postItems');
+  if(!data||data.length===0){el.innerHTML='<div style="color:#445566;font-size:13px;">No posts yet</div>';return;}
+  el.innerHTML=data.map(p=>`
+    <div class="item-row">
+      <div class="item-info">
+        <div class="item-title-text">${p.title||'Untitled'}</div>
+        <div class="item-meta">${p.category||'No category'} • ${new Date(p.created_at).toLocaleDateString()}</div>
+      </div>
+      <button class="btn-del" onclick="deletePost(${p.id})">🗑 Delete</button>
+    </div>`).join('');
+}
+
+async function deletePost(id){
+  if(!confirm('Delete this post?'))return;
+  await sb.from('posts').delete().eq('id',id);
+  showToast('🗑 Post Deleted');
+  loadPosts();
+}
+
+// ── VIDEOS ──
+async function addVideo(){
+  const title=document.getElementById('vTitle').value.trim();
+  const link=document.getElementById('vLink').value.trim();
+  if(!title||!link){alert('Title and link required!');return;}
+  const{error}=await sb.from('videos').insert({title,link});
+  if(error){alert('Error: '+error.message);return;}
+  document.getElementById('vTitle').value='';
+  document.getElementById('vLink').value='';
+  showToast('✅ Video Added!');
+  loadVideos();
+}
+
+async function loadVideos(){
+  const{data}=await sb.from('videos').select('*').order('created_at',{ascending:false});
+  const el=document.getElementById('videoItems');
+  if(!data||data.length===0){el.innerHTML='<div style="color:#445566;font-size:13px;">No videos yet</div>';return;}
+  el.innerHTML=data.map(v=>`
+    <div class="item-row">
+      <div class="item-info">
+        <div class="item-title-text">${v.title||'Untitled'}</div>
+        <div class="item-meta">${new Date(v.created_at).toLocaleDateString()}</div>
+      </div>
+      <button class="btn-del" onclick="deleteVideo(${v.id})">🗑 Delete</button>
+    </div>`).join('');
+}
+
+async function deleteVideo(id){
+  if(!confirm('Delete this video?'))return;
+  await sb.from('videos').delete().eq('id',id);
+  showToast('🗑 Video Deleted');
+  loadVideos();
+}
+
+// ── SETTINGS ──
+async function loadSettingsForm(){
+  const{data}=await sb.from('settings').select('*').limit(1);
+  if(data&&data[0]){
+    const s=data[0];
+    if(s.site_title)document.getElementById('sTitle').value=s.site_title;
+    if(s.profile_image)document.getElementById('sProfile').value=s.profile_image;
+    if(s.ad_code)document.getElementById('sAds').value=s.ad_code;
+    if(s.social_links){
+      try{
+        const l=JSON.parse(s.social_links);
+        if(l.telegram)document.getElementById('sTg').value=l.telegram;
+        if(l.youtube)document.getElementById('sYt').value=l.youtube;
+        if(l.whatsapp)document.getElementById('sWa').value=l.whatsapp;
+        if(l.facebook)document.getElementById('sFb').value=l.facebook;
+        if(l.tiktok)document.getElementById('sTt').value=l.tiktok;
+      }catch(e){}
+    }
+  }
+}
+
+async function saveSettings(){
+  const social=JSON.stringify({
+    telegram:document.getElementById('sTg').value.trim(),
+    youtube:document.getElementById('sYt').value.trim(),
+    whatsapp:document.getElementById('sWa').value.trim(),
+    facebook:document.getElementById('sFb').value.trim(),
+    tiktok:document.getElementById('sTt').value.trim()
+  });
+  const payload={
+    site_title:document.getElementById('sTitle').value.trim(),
+    profile_image:document.getElementById('sProfile').value.trim(),
+    ad_code:document.getElementById('sAds').value.trim(),
+    social_links:social
+  };
+  const{data}=await sb.from('settings').select('id').limit(1);
+  if(data&&data[0]){
+    await sb.from('settings').update(payload).eq('id',data[0].id);
+  } else {
+    await sb.from('settings').insert(payload);
+  }
+  showToast('✅ Settings Saved!');
+}
+
+// Check if already logged in
+sb.auth.getSession().then(({data:{session}})=>{
+  if(session){
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminPage').style.display='block';
+    loadPosts();loadVideos();loadSettingsForm();
+  }
+});
+</script>
+</body>
+</html>

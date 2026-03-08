@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GFX Gamer Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--neon:#00ffe7;--red:#ff2d55;--gold:#ffd700;--bg:#07090d;--card:#0d1117;--border:#1a2535;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:#cdd9e5;font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,231,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,231,0.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+.ad-banner{position:relative;z-index:10;background:#0d1117;border-bottom:1px solid var(--border);padding:10px;text-align:center;min-height:60px;display:flex;align-items:center;justify-content:center;}
+header{position:relative;z-index:10;padding:30px 20px 10px;text-align:center;}
+.profile-img{width:84px;height:84px;border-radius:50%;border:2px solid var(--neon);object-fit:cover;box-shadow:0 0 24px rgba(0,255,231,0.35);margin:0 auto 12px;display:none;}
+.profile-placeholder{width:84px;height:84px;border-radius:50%;border:2px solid var(--neon);background:linear-gradient(135deg,#0d1520,#111a24);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 12px;box-shadow:0 0 24px rgba(0,255,231,0.35);}
+.site-title{font-family:'Orbitron',monospace;font-size:clamp(20px,5vw,38px);font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,#fff 30%,var(--neon) 70%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.site-sub{font-size:11px;letter-spacing:3px;color:#445566;text-transform:uppercase;margin-top:6px;}
+nav{position:relative;z-index:10;display:flex;justify-content:center;flex-wrap:wrap;gap:4px;padding:18px 16px 8px;}
+.tab-btn{background:transparent;border:1px solid var(--border);color:#667788;font-family:'Exo 2',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;cursor:pointer;transition:all 0.2s;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);}
+.tab-btn:hover,.tab-btn.active{background:rgba(0,255,231,0.08);border-color:var(--neon);color:var(--neon);}
+.main{position:relative;z-index:10;max-width:680px;margin:0 auto;padding:10px 16px 60px;}
+.section{display:none;}.section.active{display:block;}
+.sec-title{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--neon);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--neon),transparent);opacity:0.3;}
+.post-card{background:var(--card);border:1px solid var(--border);margin-bottom:14px;overflow:hidden;transition:all 0.25s;animation:fadeUp 0.4s ease both;}
+.post-card:hover{border-color:rgba(0,255,231,0.4);transform:translateY(-2px);}
+.post-thumb{width:100%;height:180px;object-fit:cover;display:block;}
+.post-thumb-placeholder{width:100%;height:90px;background:linear-gradient(135deg,#0d1520,#111a24);display:flex;align-items:center;justify-content:center;font-size:28px;}
+.post-body{padding:14px;}
+.post-cat{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--neon);margin-bottom:6px;}
+.post-title{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#dde8f0;margin-bottom:6px;}
+.post-desc{font-size:13px;color:#556677;line-height:1.5;margin-bottom:12px;}
+.post-btn{display:inline-block;background:rgba(0,255,231,0.08);border:1px solid rgba(0,255,231,0.3);color:var(--neon);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;padding:8px 18px;text-decoration:none;transition:all 0.2s;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);}
+.post-btn:hover{background:rgba(0,255,231,0.18);}
+.video-card{background:var(--card);border:1px solid var(--border);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;transition:all 0.25s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+.video-card:hover{border-color:rgba(255,45,85,0.5);transform:translateX(4px);}
+.video-icon{width:46px;height:46px;background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.video-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#dde8f0;}
+.social-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.social-card{background:var(--card);border:1px solid var(--border);padding:20px 16px;text-align:center;text-decoration:none;color:inherit;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.social-card:hover{transform:translateY(-3px);}
+.social-card.tg:hover{border-color:#0088cc;background:rgba(0,136,204,0.06);}
+.social-card.yt:hover{border-color:#ff0000;background:rgba(255,0,0,0.06);}
+.social-card.wa:hover{border-color:#25d366;background:rgba(37,211,102,0.06);}
+.social-card.fb:hover{border-color:#1877f2;background:rgba(24,119,242,0.06);}
+.social-card.tt:hover{border-color:#ff0050;background:rgba(255,0,80,0.06);}
+.social-icon{font-size:30px;}
+.social-name{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;color:#667788;}
+.mid-ad{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--neon);padding:14px;margin:16px 0;min-height:90px;display:flex;align-items:center;justify-content:center;}
+.loading{text-align:center;padding:40px;color:#445566;font-size:13px;letter-spacing:2px;}
+footer{position:relative;z-index:10;text-align:center;padding:20px;border-top:1px solid var(--border);font-size:11px;letter-spacing:2px;color:#2a3545;text-transform:uppercase;}
+footer a{color:var(--neon);text-decoration:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="ad-banner" id="topAd">
+  <span style="font-size:10px;letter-spacing:2px;color:#2a3545;text-transform:uppercase;">AD SPACE</span>
+</div>
+
+<header>
+  <img class="profile-img" id="profileImg" src="" alt="Profile"/>
+  <div class="profile-placeholder" id="profilePlaceholder">🎮</div>
+  <div class="site-title" id="siteTitle">GFX GAMER LAB</div>
+  <div class="site-sub">PUBG • Configs • Tools • Free Downloads</div>
+</header>
+
+<nav>
+  <button class="tab-btn active" onclick="showTab('posts',this)">📦 Posts</button>
+  <button class="tab-btn" onclick="showTab('videos',this)">▶️ Videos</button>
+  <button class="tab-btn" onclick="showTab('support',this)">📡 Support Us</button>
+</nav>
+
+<div class="main">
+
+  <div id="tab-posts" class="section active">
+    <div class="sec-title">Latest Posts</div>
+    <div id="postsList"><div class="loading">⏳ Loading...</div></div>
+    <div class="mid-ad" id="midAd">
+      <span style="font-size:10px;letter-spacing:2px;color:#2a3545;text-transform:uppercase;">AD SPACE</span>
+    </div>
+  </div>
+
+  <div id="tab-videos" class="section">
+    <div class="sec-title">Tutorial Videos</div>
+    <div id="videosList"><div class="loading">⏳ Loading...</div></div>
+  </div>
+
+  <div id="tab-support" class="section">
+    <div class="sec-title">Support Us / My Channels</div>
+    <div class="social-grid" id="socialGrid">
+      <a href="https://t.me/gfxgamerlab" target="_blank" class="social-card tg">
+        <div class="social-icon">📡</div><div class="social-name">Telegram</div>
+      </a>
+      <a href="#" target="_blank" class="social-card yt" id="ytLink">
+        <div class="social-icon">▶️</div><div class="social-name">YouTube</div>
+      </a>
+      <a href="#" target="_blank" class="social-card wa" id="waLink">
+        <div class="social-icon">💬</div><div class="social-name">WhatsApp</div>
+      </a>
+      <a href="#" target="_blank" class="social-card fb" id="fbLink">
+        <div class="social-icon">📘</div><div class="social-name">Facebook</div>
+      </a>
+      <a href="#" target="_blank" class="social-card tt" id="ttLink">
+        <div class="social-icon">🎵</div><div class="social-name">TikTok</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>© 2025 <a href="#">GFX Gamer Lab</a> • All Rights Reserved</footer>
+
+<script>
+const SUPABASE_URL='https://clvmcoaufhmqkflolmtw.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsdm1jb2F1ZmhtcWtmbG9sbXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MDQyNzAsImV4cCI6MjA4ODQ4MDI3MH0.kdua1_V2WCVAM7BoEODP8jGIq1NJqQ4T0BwHwAxlDc4';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+function showTab(name,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+async function loadSettings(){
+  const{data}=await sb.from('settings').select('*').limit(1);
+  if(data&&data[0]){
+    const s=data[0];
+    if(s.site_title)document.getElementById('siteTitle').textContent=s.site_title;
+    if(s.profile_image){
+      document.getElementById('profileImg').src=s.profile_image;
+      document.getElementById('profileImg').style.display='block';
+      document.getElementById('profilePlaceholder').style.display='none';
+    }
+    if(s.ad_code){
+      document.getElementById('topAd').innerHTML=s.ad_code;
+      document.getElementById('midAd').innerHTML=s.ad_code;
+    }
+    if(s.social_links){
+      try{
+        const l=JSON.parse(s.social_links);
+        if(l.youtube)document.getElementById('ytLink').href=l.youtube;
+        if(l.whatsapp)document.getElementById('waLink').href=l.whatsapp;
+        if(l.facebook)document.getElementById('fbLink').href=l.facebook;
+        if(l.tiktok)document.getElementById('ttLink').href=l.tiktok;
+      }catch(e){}
+    }
+  }
+}
+
+async function loadPosts(){
+  const{data}=await sb.from('posts').select('*').order('created_at',{ascending:false});
+  const el=document.getElementById('postsList');
+  if(!data||data.length===0){el.innerHTML='<div class="loading">No posts yet</div>';return;}
+  el.innerHTML=data.map(p=>`
+    <div class="post-card">
+      ${p.thumbnail?`<img class="post-thumb" src="${p.thumbnail}" onerror="this.style.display='none'"/>`:`<div class="post-thumb-placeholder">📦</div>`}
+      <div class="post-body">
+        ${p.category?`<div class="post-cat">${p.category}</div>`:''}
+        <div class="post-title">${p.title||''}</div>
+        ${p.description?`<div class="post-desc">${p.description}</div>`:''}
+        ${p.link?`<a href="${p.link}" target="_blank" class="post-btn">DOWNLOAD →</a>`:''}
+      </div>
+    </div>`).join('');
+}
+
+async function loadVideos(){
+  const{data}=await sb.from('videos').select('*').order('created_at',{ascending:false});
+  const el=document.getElementById('videosList');
+  if(!data||data.length===0){el.innerHTML='<div class="loading">No videos yet</div>';return;}
+  el.innerHTML=data.map(v=>`
+    <a href="${v.link||'#'}" target="_blank" class="video-card">
+      <div class="video-icon">▶️</div>
+      <div class="video-title">${v.title||''}</div>
+    </a>`).join('');
+}
+
+loadSettings();loadPosts();loadVideos();
+</script>
+</body>
+</html>
