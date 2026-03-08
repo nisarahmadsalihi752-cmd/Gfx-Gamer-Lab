@@ -355,7 +355,6 @@ async function trackVisit(){
     if(sessionStorage.getItem(sessionKey))return; // Already tracked this session today
     sessionStorage.setItem(sessionKey,'1');
     await sb.from('analytics').insert([{
-      id:Date.now().toString()+Math.random().toString(36).slice(2),
       date:dateStr,
       month:monthStr,
       country:'Unknown',
@@ -504,7 +503,7 @@ async function submitFeedback(){
   const text=document.getElementById('fbText').value.trim();
   const rating=parseInt(document.getElementById('fbRating').value);
   if(!text){alert('Please write your feedback!');return;}
-  await sb.from('feedbacks').insert([{id:Date.now().toString(),name:name||'Anonymous',text,rating,date:Date.now()}]);
+  await sb.from('feedbacks').insert([{name:name||'Anonymous',text,rating,date:Date.now()}]);
   document.getElementById('fbSuccess').style.display='block';
   document.getElementById('fbName').value='';document.getElementById('fbText').value='';
   setTimeout(()=>document.getElementById('fbSuccess').style.display='none',4000);
