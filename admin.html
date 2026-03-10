@@ -84,7 +84,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .bar-val{font-size:10px;color:var(--neon);font-weight:700;}
 .device-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
 .device-row:last-child{border:none;}
-.device-name{width:80px;font-size:13px;font-weight:600;}
+.device-name{width:100px;font-size:13px;font-weight:600;}
 .device-bar-wrap{flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:10px;overflow:hidden;}
 .device-bar{height:100%;background:linear-gradient(90deg,var(--neon),var(--accent));border-radius:4px;transition:width 0.5s;}
 .device-count{width:50px;text-align:right;font-size:13px;color:var(--neon);font-weight:700;}
@@ -113,6 +113,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(0,255,136,0.15);border:1px solid rgba(0,255,136,0.4);color:var(--green);padding:11px 22px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}.toast.error{background:rgba(255,51,85,0.15);border-color:rgba(255,51,85,0.4);color:var(--danger);}
+/* TOP POSTS TABLE */
+.top-post-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.top-post-row:last-child{border:none;}
+.top-rank{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--neon);width:24px;font-weight:900;}
+.top-title{flex:1;font-size:13px;font-weight:600;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+.top-val{font-size:12px;color:var(--neon);font-weight:700;white-space:nowrap;}
 @media(max-width:700px){.admin-sidebar{position:fixed;left:-215px;top:58px;z-index:200;height:calc(100vh - 58px);transition:left 0.3s;}.admin-sidebar.open{left:0;}.sidebar-toggle{display:block;}}
 </style>
 </head>
@@ -149,6 +155,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="nav-item" onclick="switchTab('socials')"><span class="nav-icon">📱</span>Social Links</div>
       <div class="nav-item" onclick="switchTab('contact')"><span class="nav-icon">📞</span>Contact Us</div>
       <div class="nav-item" onclick="switchTab('ads')"><span class="nav-icon">📢</span>Ads</div>
+      <div class="nav-item" onclick="switchTab('seo')"><span class="nav-icon">🔍</span>SEO</div>
       <div class="nav-item" onclick="switchTab('feedback')"><span class="nav-icon">💬</span>Feedback</div>
       <div class="nav-item" onclick="switchTab('settings')"><span class="nav-icon">⚙️</span>Settings</div>
     </div>
@@ -166,6 +173,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <div class="stat-card"><div class="stat-num" id="dash-today">0</div><div class="stat-label">TODAY VISITS</div></div>
           <div class="stat-card"><div class="stat-num" id="dash-month">0</div><div class="stat-label">MONTH VISITS</div></div>
           <div class="stat-card"><div class="stat-num" id="dash-total">0</div><div class="stat-label">TOTAL VISITS</div></div>
+          <div class="stat-card"><div class="stat-num" id="dash-downloads">0</div><div class="stat-label">DOWNLOADS</div></div>
         </div>
         <div class="section-card">
           <div class="section-title">🚀 QUICK ACTIONS</div>
@@ -174,32 +182,29 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
             <button class="btn btn-success" onclick="switchTab('manageposts')">📋 Manage Posts</button>
             <button class="btn btn-edit" onclick="switchTab('analytics')">📈 Analytics</button>
             <button class="btn btn-edit" onclick="switchTab('feedback')">💬 Feedback</button>
+            <button class="btn btn-edit" onclick="switchTab('seo')">🔍 SEO</button>
           </div>
         </div>
       </div>
 
       <!-- ANALYTICS -->
       <div class="tab-content" id="tab-analytics">
-        <div class="section-title">📈 ANALYTICS</div>
+        <div class="section-title">📈 FULL ANALYTICS</div>
 
         <div class="stats-grid">
           <div class="stat-card"><div class="stat-num" id="an-today">0</div><div class="stat-label">TODAY</div></div>
           <div class="stat-card"><div class="stat-num" id="an-yesterday">0</div><div class="stat-label">YESTERDAY</div></div>
           <div class="stat-card"><div class="stat-num" id="an-week">0</div><div class="stat-label">THIS WEEK</div></div>
           <div class="stat-card"><div class="stat-num" id="an-month">0</div><div class="stat-label">THIS MONTH</div></div>
-          <div class="stat-card"><div class="stat-num" id="an-total">0</div><div class="stat-label">ALL TIME</div></div>
+          <div class="stat-card"><div class="stat-num" id="an-total">0</div><div class="stat-label">ALL VISITS</div></div>
+          <div class="stat-card"><div class="stat-num" id="an-downloads">0</div><div class="stat-label">DOWNLOADS</div></div>
+          <div class="stat-card"><div class="stat-num" id="an-views">0</div><div class="stat-label">POST VIEWS</div></div>
         </div>
 
         <!-- 7 DAY CHART -->
         <div class="analytics-chart">
-          <h4>📅 LAST 7 DAYS</h4>
+          <h4>📅 LAST 7 DAYS (VISITS)</h4>
           <div class="bar-chart" id="barChart7"></div>
-        </div>
-
-        <!-- DEVICE BREAKDOWN -->
-        <div class="analytics-chart">
-          <h4>📱 DEVICE BREAKDOWN</h4>
-          <div id="deviceChart"></div>
         </div>
 
         <!-- MONTHLY CHART -->
@@ -208,29 +213,61 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <div class="bar-chart" id="barChart6m"></div>
         </div>
 
-        <!-- CLEAR ANALYTICS -->
+        <!-- DEVICE BREAKDOWN -->
+        <div class="analytics-chart">
+          <h4>📱 DEVICE BREAKDOWN</h4>
+          <div id="deviceChart"></div>
+        </div>
+
+        <!-- TRAFFIC SOURCE -->
+        <div class="analytics-chart">
+          <h4>🔗 TRAFFIC SOURCE</h4>
+          <div id="sourceChart"></div>
+        </div>
+
+        <!-- TOP COUNTRIES -->
+        <div class="analytics-chart">
+          <h4>🌍 TOP COUNTRIES</h4>
+          <div id="countryChart"></div>
+        </div>
+
+        <!-- TOP POSTS BY VIEWS -->
+        <div class="analytics-chart">
+          <h4>🔥 TOP POSTS (BY VIEWS)</h4>
+          <div id="topPostsViews"></div>
+        </div>
+
+        <!-- TOP POSTS BY DOWNLOADS -->
+        <div class="analytics-chart">
+          <h4>⬇️ TOP POSTS (BY DOWNLOADS)</h4>
+          <div id="topPostsDl"></div>
+        </div>
+
         <div style="margin-top:12px;">
-          <button class="btn btn-danger btn-sm" onclick="clearAnalytics()">🗑️ Clear All Analytics Data</button>
+          <button class="btn btn-danger btn-sm" onclick="clearAnalytics()">🗑️ Clear Analytics Data</button>
         </div>
       </div>
 
       <!-- ADD POST -->
       <div class="tab-content" id="tab-addpost">
-        <div class="section-title">➕ ADD NEW POST</div>
+        <div class="section-title">➕ ADD / EDIT POST</div>
         <div class="section-card">
           <input type="hidden" id="editPostId">
-          <div class="form-group"><label>POST TITLE *</label><input type="text" id="pTitle" placeholder="Enter post title"></div>
-          <div class="form-group"><label>DESCRIPTION <span class="optional-tag">OPTIONAL</span></label><textarea id="pDesc" placeholder="Enter description..."></textarea></div>
+
+          <div class="form-group"><label>TITLE *</label><input type="text" id="pTitle" placeholder="e.g. PUBG 4.2 V15 VIP File 🔥"></div>
+          <div class="form-group"><label>DESCRIPTION <span class="optional-tag">OPTIONAL</span></label><textarea id="pDesc" placeholder="Post description..."></textarea></div>
 
           <div class="collapsible">
-            <div class="collapsible-header" onclick="toggleCollapse(this)">🖼️ THUMBNAIL IMAGE <span class="optional-tag">OPTIONAL</span><span>▼</span></div>
+            <div class="collapsible-header" onclick="toggleCollapse(this)">🖼️ THUMBNAIL <span class="optional-tag">OPTIONAL</span><span>▼</span></div>
             <div class="collapsible-body">
-              <div class="img-upload-area" onclick="document.getElementById('thumbFile').click()">
-                <input type="file" id="thumbFile" accept="image/*" onchange="handleThumbUpload(event)" style="display:none">
-                <div class="upload-icon">🖼️</div><div class="upload-text">Click to upload from gallery</div>
-                <img id="thumbPreview" class="img-preview">
+              <div class="form-group">
+                <div class="img-upload-area" onclick="document.getElementById('thumbFile').click()">
+                  <input type="file" id="thumbFile" accept="image/*" onchange="handleThumbUpload(event)" style="display:none">
+                  <div class="upload-icon">🖼️</div><div class="upload-text">Click to upload from gallery</div>
+                  <img id="thumbPreview" class="img-preview">
+                </div>
+                <input type="hidden" id="pThumbnail">
               </div>
-              <input type="hidden" id="pThumbnail">
             </div>
           </div>
 
@@ -242,7 +279,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
                 <div class="video-upload-area" onclick="document.getElementById('videoFile').click()">
                   <input type="file" id="videoFile" accept="video/*" onchange="handleVideoUpload(event)" style="display:none">
                   <div class="upload-icon">🎬</div>
-                  <div class="upload-text">Upload video (1 min+)<br><small style="color:var(--muted);">Auto-plays muted • Tap to unmute</small></div>
+                  <div class="upload-text">Upload video<br><small style="color:var(--muted);">Auto-plays muted • Max 100MB</small></div>
                 </div>
                 <div class="video-progress" id="videoProgress"><div class="video-progress-bar" id="videoProgressBar"></div></div>
                 <div id="videoFileName" style="font-size:12px;color:var(--green);margin-top:5px;"></div>
@@ -250,17 +287,21 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
                 <input type="hidden" id="pVideoUrl">
               </div>
               <div class="form-group">
-                <label>🔗 OR YOUTUBE LINK <span class="optional-tag">OPTIONAL</span></label>
-                <input type="text" id="pVideoEmbed" placeholder="https://youtube.com/watch?v=... (auto-plays)">
-                <small>YouTube auto-plays muted. Users can click to unmute.</small>
+                <label>🔗 YOUTUBE LINK <span class="optional-tag">OPTIONAL</span></label>
+                <input type="text" id="pVideoEmbed" placeholder="https://youtube.com/watch?v=... (auto-plays muted)">
+                <small>YouTube, any embed URL — auto-plays muted when post is opened</small>
               </div>
             </div>
           </div>
 
           <div class="collapsible">
-            <div class="collapsible-header" onclick="toggleCollapse(this)">⬇️ DOWNLOAD LINK <span class="optional-tag">OPTIONAL</span><span>▼</span></div>
+            <div class="collapsible-header" onclick="toggleCollapse(this)">⬇️ DOWNLOAD LINKS <span class="optional-tag">OPTIONAL</span><span>▼</span></div>
             <div class="collapsible-body">
-              <div class="form-group"><label>DOWNLOAD LINK</label><input type="text" id="pDownload" placeholder="https://..."></div>
+              <div class="form-group"><label>MAIN DOWNLOAD LINK TITLE <span class="optional-tag">OPTIONAL</span></label><input type="text" id="pDownloadTitle" placeholder="e.g. PUBG GL Download, Global Version, 32-bit"><small>Button pr show hoga — khaali rakho to sirf ⬇ DOWNLOAD dikhega</small></div>
+              <div class="form-group"><label>MAIN DOWNLOAD LINK</label><input type="text" id="pDownload" placeholder="https://... (MediaFire, Drive, Telegram, etc.)"></div>
+              <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+              <div class="form-group"><label>ALT DOWNLOAD LINK 2 TITLE <span class="optional-tag">OPTIONAL</span></label><input type="text" id="pDownload2Title" placeholder="e.g. BGMI Download, India Version, 64-bit"><small>Dusry button ka title — e.g. BGMI, India Version, Mirror, etc.</small></div>
+              <div class="form-group"><label>ALT DOWNLOAD LINK 2 <span class="optional-tag">OPTIONAL</span></label><input type="text" id="pDownload2" placeholder="https://... (backup/mirror link)"></div>
             </div>
           </div>
 
@@ -269,6 +310,17 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
             <div class="collapsible-body">
               <div class="form-group"><label>TELEGRAM POST LINK</label><input type="text" id="pTelegram" placeholder="https://t.me/..."></div>
               <div class="form-group"><label>WHATSAPP POST LINK</label><input type="text" id="pWhatsApp" placeholder="https://whatsapp.com/..."></div>
+            </div>
+          </div>
+
+          <div class="collapsible">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">🔍 SEO TAGS <span class="optional-tag">OPTIONAL</span><span>▼</span></div>
+            <div class="collapsible-body">
+              <div class="form-group">
+                <label>SEO TAGS (comma separated)</label>
+                <input type="text" id="pSeoTags" placeholder="pubg config, gfx tool, 90fps, sensitivity, vip file">
+                <small>These tags help Google find this post. Add relevant keywords separated by commas.</small>
+              </div>
             </div>
           </div>
 
@@ -303,6 +355,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="section-card">
           <div class="form-group"><label>▶ YOUTUBE</label><input type="text" id="sYoutube" placeholder="https://youtube.com/..."></div>
           <div class="form-group"><label>✈ TELEGRAM CHANNEL</label><input type="text" id="sTelegram" placeholder="https://t.me/..."></div>
+          <div class="form-group"><label>TELEGRAM MEMBERS COUNT <span class="optional-tag">OPTIONAL</span></label><input type="text" id="sTelegramMembers" placeholder="e.g. 3,514"><small>Shows in hero join button</small></div>
           <div class="form-group"><label>💬 WHATSAPP CHANNEL</label><input type="text" id="sWhatsApp" placeholder="https://whatsapp.com/..."></div>
           <div class="form-group"><label>f FACEBOOK</label><input type="text" id="sFacebook" placeholder="https://facebook.com/..."></div>
           <div class="form-group"><label>♪ TIKTOK</label><input type="text" id="sTiktok" placeholder="https://tiktok.com/..."></div>
@@ -320,33 +373,101 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <!-- ADS -->
+      <!-- ADS (6 slots) -->
       <div class="tab-content" id="tab-ads">
         <div class="section-title">📢 ADS MANAGEMENT</div>
         <div class="section-card">
-          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Paste your ad code from <strong style="color:var(--neon);">Adsterra</strong>, Google AdSense, or any ad network. Enable the toggle to show it on the site.</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Paste ad code from <strong style="color:var(--neon);">Adsterra</strong>, <strong style="color:var(--neon);">PropellerAds</strong>, Google AdSense, or any network. Toggle ON to show on site.</p>
+
           <div class="form-group">
-            <label>TOP BANNER AD <span class="optional-tag">OPTIONAL</span></label>
+            <label>1️⃣ TOP BANNER AD <span class="optional-tag">OPTIONAL</span></label>
             <div class="toggle-wrap"><div class="toggle" id="togAdTop" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
-            <textarea id="adTop" placeholder="Paste your Adsterra / AdSense banner code here..."></textarea>
-            <small>Recommended size: 728x90 or 320x50 (mobile)</small>
+            <textarea id="adTop" placeholder="Paste Adsterra / AdSense banner code..."></textarea>
+            <small>728x90 or 320x50 (mobile) — shows at very top</small>
           </div>
+
           <div class="form-group">
-            <label>SIDEBAR AD <span class="optional-tag">OPTIONAL</span></label>
+            <label>2️⃣ SIDEBAR AD <span class="optional-tag">OPTIONAL</span></label>
             <div class="toggle-wrap"><div class="toggle" id="togAdSide" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
-            <textarea id="adSidebar" placeholder="Paste sidebar ad code (160x600 or 300x250)..."></textarea>
+            <textarea id="adSidebar" placeholder="Paste sidebar ad code (300x250 recommended)..."></textarea>
+            <small>300x250 — shows in right sidebar</small>
           </div>
+
           <div class="form-group">
-            <label>IN-CONTENT AD <span class="optional-tag">OPTIONAL</span></label>
+            <label>3️⃣ IN-CONTENT AD <span class="optional-tag">OPTIONAL</span></label>
             <div class="toggle-wrap"><div class="toggle" id="togAdContent" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
-            <textarea id="adInContent" placeholder="Paste in-content ad code (728x90 or 320x100)..."></textarea>
+            <textarea id="adInContent" placeholder="Paste in-content / native banner code..."></textarea>
+            <small>Shows above posts — Native Banner recommended</small>
+          </div>
+
+          <div class="form-group">
+            <label>4️⃣ BELOW HERO AD <span class="optional-tag">OPTIONAL</span></label>
+            <div class="toggle-wrap"><div class="toggle" id="togAdHero" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
+            <textarea id="adBelowHero" placeholder="Paste ad code — shows between hero and posts..."></textarea>
+            <small>Shows between hero section and search bar</small>
+          </div>
+
+          <div class="form-group">
+            <label>5️⃣ MID-CONTENT AD <span class="optional-tag">OPTIONAL</span></label>
+            <div class="toggle-wrap"><div class="toggle" id="togAdMid" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
+            <textarea id="adMid" placeholder="Paste ad code — shows in middle of posts..."></textarea>
+            <small>Shows after posts grid — good for Native Banner</small>
+          </div>
+
+          <div class="form-group">
+            <label>6️⃣ PRE-DOWNLOAD AD <span class="optional-tag">OPTIONAL</span></label>
+            <div class="toggle-wrap"><div class="toggle" id="togAdPreDl" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
+            <textarea id="adPreDownload" placeholder="Paste ad code — shows in download countdown popup..."></textarea>
+            <small>⭐ HIGHEST EARNING — shows during 5-second download countdown!</small>
+          </div>
+
+          <div class="form-group">
+            <label>7️⃣ FOOTER AD <span class="optional-tag">OPTIONAL</span></label>
+            <div class="toggle-wrap"><div class="toggle" id="togAdFooter" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
+            <textarea id="adFooter" placeholder="Paste footer ad / Social Bar code..."></textarea>
+            <small>Shows at bottom — Social Bar recommended</small>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveAds()">💾 SAVE ADS</button>
+        </div>
+      </div>
+
+      <!-- SEO TAB -->
+      <div class="tab-content" id="tab-seo">
+        <div class="section-title">🔍 SEO SETTINGS</div>
+        <div class="section-card">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7;">SEO settings help Google rank your website higher in search results. Add relevant keywords so people searching for PUBG configs find your site!</p>
+          <div class="form-group">
+            <label>GLOBAL SEO KEYWORDS</label>
+            <textarea id="sSeoText" placeholder="PUBG Mobile config, GFX tool, PUBG sensitivity settings, free download, PUBG Pakistan..." style="min-height:120px;"></textarea>
+            <small>Comma separated. These keywords are added to every page of your website.</small>
           </div>
           <div class="form-group">
-            <label>FOOTER AD <span class="optional-tag">OPTIONAL</span></label>
-            <div class="toggle-wrap"><div class="toggle" id="togAdFooter" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show on website</span></div>
-            <textarea id="adFooter" placeholder="Paste footer ad code..."></textarea>
+            <label>META DESCRIPTION <span class="optional-tag">OPTIONAL</span></label>
+            <textarea id="sSeoDesc" placeholder="GFX Gamer Lab - Free PUBG Mobile pro configs, GFX tools & premium gaming resources..." style="min-height:80px;"></textarea>
+            <small>Max 160 characters. This shows in Google search results under your website title.</small>
           </div>
-          <button class="btn btn-primary" onclick="saveAds()">💾 SAVE ADS</button>
+          <div class="form-group">
+            <label>ANNOUNCEMENT BAR TEXT <span class="optional-tag">OPTIONAL</span></label>
+            <input type="text" id="sAnnouncementText" placeholder="🔥 New Config Added! | ⚡ 90FPS Available | 💎 VIP File Updated!">
+            <small>Scrolling ticker bar at top of website. Leave empty to hide.</small>
+          </div>
+          <div class="form-group">
+            <label>ANNOUNCEMENT BAR</label>
+            <div class="toggle-wrap"><div class="toggle" id="togAnnouncement" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Show announcement bar</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="saveSEO()">💾 SAVE SEO</button>
+        </div>
+        <div class="section-card">
+          <div class="section-title" style="font-size:11px;">💡 SEO TIPS</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.9;">
+            ✅ Add post SEO tags when creating posts (in Add Post → SEO Tags)<br>
+            ✅ Use keywords in post titles like "PUBG Mobile Config 2024 Free Download"<br>
+            ✅ Add description to every post<br>
+            ✅ Share posts on Telegram — Google sees backlinks<br>
+            ✅ Post regularly — Google ranks active sites higher<br>
+            ✅ Site is already submitted to Google Search Console ✓
+          </div>
         </div>
       </div>
 
@@ -377,7 +498,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <div class="form-group"><label>ABOUT YOUTUBE TEXT</label><textarea id="sAboutYt" placeholder="YouTube section text..."></textarea></div>
           <div class="form-group"><label>PRIVACY POLICY</label><textarea id="sPrivacy" placeholder="Privacy policy..." style="min-height:140px;"></textarea></div>
           <div class="form-group"><label>TRUST RATING LINK <span class="optional-tag">OPTIONAL</span></label><input type="text" id="sTrustLink" placeholder="https://..."></div>
-          <div class="form-group"><label>SEO KEYWORDS <span class="optional-tag">OPTIONAL</span></label><textarea id="sSeoText" placeholder="gaming, pubg, gfx tools..."></textarea></div>
           <button class="btn btn-primary" onclick="saveSettings()">💾 SAVE SETTINGS</button>
         </div>
         <div class="section-card">
@@ -416,7 +536,7 @@ if(sessionStorage.getItem('gfx_auth')==='1'){document.getElementById('loginWrap'
 function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' error':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
 // TABS
-const tabOrder=['dashboard','analytics','addpost','manageposts','tutorials','socials','contact','ads','feedback','settings'];
+const tabOrder=['dashboard','analytics','addpost','manageposts','tutorials','socials','contact','ads','seo','feedback','settings'];
 function switchTab(id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -443,48 +563,72 @@ function handleVideoUpload(e){
   document.getElementById('videoFileName').textContent='⏳ Reading: '+f.name;
   const r=new FileReader();let prog=0;
   const iv=setInterval(()=>{prog=Math.min(prog+4,90);document.getElementById('videoProgressBar').style.width=prog+'%';},100);
-  r.onload=ev=>{clearInterval(iv);document.getElementById('videoProgressBar').style.width='100%';document.getElementById('pVideoUrl').value=ev.target.result;document.getElementById('videoFileName').textContent='✅ '+f.name+' ('+Math.round(f.size/1024/1024)+'MB)';const w=document.getElementById('videoPreviewWrap');document.getElementById('videoPreview').src=ev.target.result;w.style.display='block';setTimeout(()=>document.getElementById('videoProgress').style.display='none',800);};
+  r.onload=ev=>{clearInterval(iv);document.getElementById('videoProgressBar').style.width='100%';document.getElementById('pVideoUrl').value=ev.target.result;const w=document.getElementById('videoPreviewWrap');const v=document.getElementById('videoPreview');v.src=ev.target.result;w.style.display='block';document.getElementById('videoFileName').textContent='✅ '+f.name;};
   r.readAsDataURL(f);
 }
 
 // POSTS
 async function savePost(){
   const title=document.getElementById('pTitle').value.trim();
-  if(!title){toast('Please enter a title!',true);return;}
+  if(!title){toast('Title is required!',true);return;}
   const editId=document.getElementById('editPostId').value;
-  const btn=document.getElementById('savePostBtn');btn.textContent='⏳ Saving...';btn.disabled=true;
-  const postData={title,description:document.getElementById('pDesc').value.trim()||null,thumbnail:document.getElementById('pThumbnail').value||null,video_url:document.getElementById('pVideoUrl').value||null,video_embed:document.getElementById('pVideoEmbed').value.trim()||null,download_link:document.getElementById('pDownload').value.trim()||null,telegram_link:document.getElementById('pTelegram').value.trim()||null,whatsapp_link:document.getElementById('pWhatsApp').value.trim()||null};
-  if(!editId){postData.created_at=Date.now();postData.likes=0;}
+  const post={
+    title,
+    description:document.getElementById('pDesc').value.trim(),
+    thumbnail:document.getElementById('pThumbnail').value||null,
+    video_url:document.getElementById('pVideoUrl').value||null,
+    video_embed:document.getElementById('pVideoEmbed').value.trim()||null,
+    download_link:document.getElementById('pDownload').value.trim()||null,
+    download_title:document.getElementById('pDownloadTitle').value.trim()||null,
+    download_link2:document.getElementById('pDownload2').value.trim()||null,
+    download_title2:document.getElementById('pDownload2Title').value.trim()||null,
+    telegram_link:document.getElementById('pTelegram').value.trim()||null,
+    whatsapp_link:document.getElementById('pWhatsApp').value.trim()||null,
+    seo_tags:document.getElementById('pSeoTags').value.trim()||null,
+    created_at:Date.now()
+  };
   try{
-    let err;
-    if(editId){const r=await sb.from('posts').update(postData).eq('id',editId);err=r.error;}
-    else{const r=await sb.from('posts').insert([postData]);err=r.error;}
-    if(err)throw err;
-    clearPostForm();toast(editId?'✅ Updated!':'✅ Post saved!');switchTab('manageposts');
-  }catch(e){toast('❌ Error: '+e.message,true);}
-  finally{btn.textContent='💾 SAVE POST';btn.disabled=false;}
+    if(editId){delete post.created_at;await sb.from('posts').update(post).eq('id',editId);toast('✅ Post updated!');}
+    else{await sb.from('posts').insert([post]);toast('✅ Post saved!');}
+    clearPostForm();
+  }catch(e){toast('Error: '+e.message,true);}
 }
-function clearPostForm(){['pTitle','pDesc','pThumbnail','pVideoUrl','pVideoEmbed','pDownload','pTelegram','pWhatsApp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('editPostId').value='';document.getElementById('thumbPreview').style.display='none';document.getElementById('videoFileName').textContent='';document.getElementById('videoPreviewWrap').style.display='none';document.getElementById('savePostBtn').textContent='💾 SAVE POST';}
-
+function clearPostForm(){
+  ['pTitle','pDesc','pVideoUrl','pVideoEmbed','pDownload','pDownloadTitle','pDownload2','pDownload2Title','pTelegram','pWhatsApp','pSeoTags','pThumbnail','editPostId'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('thumbPreview').style.display='none';
+  document.getElementById('videoPreviewWrap').style.display='none';
+  document.getElementById('videoFileName').textContent='';
+  document.getElementById('videoProgress').style.display='none';
+  document.getElementById('savePostBtn').textContent='💾 SAVE POST';
+  document.querySelectorAll('.collapsible-body').forEach(b=>{b.classList.remove('open');if(b.previousElementSibling)b.previousElementSibling.querySelector('span:last-child').textContent='▼';});
+}
 async function renderManagePosts(){
   const el=document.getElementById('postsList');
   el.innerHTML='<div class="loading"><div class="loading-spinner"></div></div>';
-  const {data:posts}=await sb.from('posts').select('*').order('created_at',{ascending:false});
-  if(!posts?.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px;">No posts yet.</div>';return;}
-  el.innerHTML=posts.map(p=>{
+  const {data}=await sb.from('posts').select('*').order('created_at',{ascending:false});
+  if(!data?.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px;">No posts yet.</div>';return;}
+  el.innerHTML=data.map(p=>{
     const thumb=p.thumbnail?`<div class="post-item-thumb"><img src="${p.thumbnail}"></div>`:`<div class="post-item-thumb">🎮</div>`;
     const date=p.created_at?new Date(parseInt(p.created_at)).toLocaleDateString():'—';
-    return `<div class="post-item">${thumb}<div class="post-item-info"><div class="post-item-title">${p.title}</div><div class="post-item-meta">${date}${p.video_url||p.video_embed?' • 🎬 Video':''}${p.download_link?' • ⬇️':''} • ❤ ${p.likes||0}</div><div class="post-item-actions"><button class="btn btn-edit btn-sm" onclick="editPost('${p.id}')">✏️ Edit</button><button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">🗑️ Delete</button></div></div></div>`;
+    return `<div class="post-item">${thumb}<div class="post-item-info"><div class="post-item-title">${p.title}</div><div class="post-item-meta">${date}${p.video_url||p.video_embed?' • 🎬':''}${p.download_link?' • ⬇️':''}${p.download_link2?' • ⬇️2':''} • ❤ ${p.likes||0}${p.seo_tags?' • 🔍 SEO':''}</div><div class="post-item-actions"><button class="btn btn-edit btn-sm" onclick="editPost('${p.id}')">✏️ Edit</button><button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">🗑️ Delete</button></div></div></div>`;
   }).join('');
 }
 async function editPost(id){
   const {data:p}=await sb.from('posts').select('*').eq('id',id).single();if(!p)return;
   switchTab('addpost');
   document.getElementById('editPostId').value=p.id;
-  document.getElementById('pTitle').value=p.title||'';document.getElementById('pDesc').value=p.description||'';
-  document.getElementById('pThumbnail').value=p.thumbnail||'';document.getElementById('pVideoUrl').value=p.video_url||'';
-  document.getElementById('pVideoEmbed').value=p.video_embed||'';document.getElementById('pDownload').value=p.download_link||'';
-  document.getElementById('pTelegram').value=p.telegram_link||'';document.getElementById('pWhatsApp').value=p.whatsapp_link||'';
+  document.getElementById('pTitle').value=p.title||'';
+  document.getElementById('pDesc').value=p.description||'';
+  document.getElementById('pThumbnail').value=p.thumbnail||'';
+  document.getElementById('pVideoUrl').value=p.video_url||'';
+  document.getElementById('pVideoEmbed').value=p.video_embed||'';
+  document.getElementById('pDownload').value=p.download_link||'';
+  document.getElementById('pDownloadTitle').value=p.download_title||'';
+  document.getElementById('pDownload2').value=p.download_link2||'';
+  document.getElementById('pDownload2Title').value=p.download_title2||'';
+  document.getElementById('pTelegram').value=p.telegram_link||'';
+  document.getElementById('pWhatsApp').value=p.whatsapp_link||'';
+  document.getElementById('pSeoTags').value=p.seo_tags||'';
   if(p.thumbnail){const pv=document.getElementById('thumbPreview');pv.src=p.thumbnail;pv.style.display='block';}
   if(p.video_url){document.getElementById('videoFileName').textContent='✅ Video loaded';const w=document.getElementById('videoPreviewWrap');document.getElementById('videoPreview').src=p.video_url;w.style.display='block';}
   document.querySelectorAll('.collapsible-body').forEach(b=>{b.classList.add('open');if(b.previousElementSibling)b.previousElementSibling.querySelector('span:last-child').textContent='▲';});
@@ -515,36 +659,85 @@ async function loadSettingsFromDB(){
   const {data}=await sb.from('settings').select('*');if(!data)return;
   const s={};data.forEach(r=>{if(r.key)s[r.key]=r.value;});
   if(s.logoImg){const p=document.getElementById('logoPreview');p.src=s.logoImg;p.style.display='block';document.getElementById('sLogoImg').value=s.logoImg;}
-  document.getElementById('sHeroDesc').value=s.heroDesc||'';document.getElementById('sAboutText').value=s.aboutText||'';
-  document.getElementById('sAboutYt').value=s.aboutYtText||'';document.getElementById('sPrivacy').value=s.privacyText||'';
-  document.getElementById('sTrustLink').value=s.trustLink||'';document.getElementById('sSeoText').value=s.seoText||'';
-  document.getElementById('sYoutube').value=s.youtube||'';document.getElementById('sTelegram').value=s.telegram||'';
-  document.getElementById('sWhatsApp').value=s.whatsapp||'';document.getElementById('sFacebook').value=s.facebook||'';
-  document.getElementById('sTiktok').value=s.tiktok||'';document.getElementById('cTelegram').value=s.contactTelegram||'';
+  document.getElementById('sHeroDesc').value=s.heroDesc||'';
+  document.getElementById('sAboutText').value=s.aboutText||'';
+  document.getElementById('sAboutYt').value=s.aboutYtText||'';
+  document.getElementById('sPrivacy').value=s.privacyText||'';
+  document.getElementById('sTrustLink').value=s.trustLink||'';
+  document.getElementById('sSeoText').value=s.seoText||'';
+  document.getElementById('sSeoDesc').value=s.seoDesc||'';
+  document.getElementById('sAnnouncementText').value=s.announcementText||'';
+  if(s.announcementOn==='1')document.getElementById('togAnnouncement').classList.add('on');
+  document.getElementById('sYoutube').value=s.youtube||'';
+  document.getElementById('sTelegram').value=s.telegram||'';
+  document.getElementById('sTelegramMembers').value=s.telegramMembers||'';
+  document.getElementById('sWhatsApp').value=s.whatsapp||'';
+  document.getElementById('sFacebook').value=s.facebook||'';
+  document.getElementById('sTiktok').value=s.tiktok||'';
+  document.getElementById('cTelegram').value=s.contactTelegram||'';
   document.getElementById('cFacebook').value=s.contactFacebook||'';
-  document.getElementById('adTop').value=s.adTop||'';document.getElementById('adSidebar').value=s.adSidebar||'';
-  document.getElementById('adInContent').value=s.adInContent||'';document.getElementById('adFooter').value=s.adFooter||'';
+  // Ads
+  document.getElementById('adTop').value=s.adTop||'';
+  document.getElementById('adSidebar').value=s.adSidebar||'';
+  document.getElementById('adInContent').value=s.adInContent||'';
+  document.getElementById('adBelowHero').value=s.adBelowHero||'';
+  document.getElementById('adMid').value=s.adMid||'';
+  document.getElementById('adPreDownload').value=s.adPreDownload||'';
+  document.getElementById('adFooter').value=s.adFooter||'';
   if(s.adTop)document.getElementById('togAdTop').classList.add('on');
   if(s.adSidebar)document.getElementById('togAdSide').classList.add('on');
   if(s.adInContent)document.getElementById('togAdContent').classList.add('on');
+  if(s.adBelowHero)document.getElementById('togAdHero').classList.add('on');
+  if(s.adMid)document.getElementById('togAdMid').classList.add('on');
+  if(s.adPreDownload)document.getElementById('togAdPreDl').classList.add('on');
   if(s.adFooter)document.getElementById('togAdFooter').classList.add('on');
 }
 async function upsert(key,value){await sb.from('settings').upsert([{key,value}],{onConflict:'key'});}
+
 async function saveSettings(){
   const logo=document.getElementById('sLogoImg').value;
-  const pairs=[['heroDesc',document.getElementById('sHeroDesc').value.trim()],['aboutText',document.getElementById('sAboutText').value.trim()],['aboutYtText',document.getElementById('sAboutYt').value.trim()],['privacyText',document.getElementById('sPrivacy').value.trim()],['trustLink',document.getElementById('sTrustLink').value.trim()],['seoText',document.getElementById('sSeoText').value.trim()]];
+  const pairs=[
+    ['heroDesc',document.getElementById('sHeroDesc').value.trim()],
+    ['aboutText',document.getElementById('sAboutText').value.trim()],
+    ['aboutYtText',document.getElementById('sAboutYt').value.trim()],
+    ['privacyText',document.getElementById('sPrivacy').value.trim()],
+    ['trustLink',document.getElementById('sTrustLink').value.trim()]
+  ];
   if(logo)pairs.push(['logoImg',logo]);
-  for(const [k,v] of pairs)await upsert(k,v);toast('✅ Settings saved!');
+  for(const [k,v] of pairs)await upsert(k,v);
+  toast('✅ Settings saved!');
 }
+
+async function saveSEO(){
+  await upsert('seoText',document.getElementById('sSeoText').value.trim());
+  await upsert('seoDesc',document.getElementById('sSeoDesc').value.trim());
+  await upsert('announcementText',document.getElementById('sAnnouncementText').value.trim());
+  await upsert('announcementOn',document.getElementById('togAnnouncement').classList.contains('on')?'1':'0');
+  toast('✅ SEO settings saved!');
+}
+
 async function saveSocials(){
-  for(const [k,id] of [['youtube','sYoutube'],['telegram','sTelegram'],['whatsapp','sWhatsApp'],['facebook','sFacebook'],['tiktok','sTiktok']])await upsert(k,document.getElementById(id).value.trim());
+  for(const [k,id] of [['youtube','sYoutube'],['telegram','sTelegram'],['telegramMembers','sTelegramMembers'],['whatsapp','sWhatsApp'],['facebook','sFacebook'],['tiktok','sTiktok']])
+    await upsert(k,document.getElementById(id).value.trim());
   toast('✅ Social links saved!');
 }
-async function saveContacts(){await upsert('contactTelegram',document.getElementById('cTelegram').value.trim());await upsert('contactFacebook',document.getElementById('cFacebook').value.trim());toast('✅ Saved!');}
-async function saveAds(){
-  const pairs=[['adTop',document.getElementById('togAdTop').classList.contains('on')?document.getElementById('adTop').value:''],['adSidebar',document.getElementById('togAdSide').classList.contains('on')?document.getElementById('adSidebar').value:''],['adInContent',document.getElementById('togAdContent').classList.contains('on')?document.getElementById('adInContent').value:''],['adFooter',document.getElementById('togAdFooter').classList.contains('on')?document.getElementById('adFooter').value:'']];
-  for(const [k,v] of pairs)await upsert(k,v);toast('✅ Ads saved!');
+async function saveContacts(){
+  await upsert('contactTelegram',document.getElementById('cTelegram').value.trim());
+  await upsert('contactFacebook',document.getElementById('cFacebook').value.trim());
+  toast('✅ Saved!');
 }
+async function saveAds(){
+  const adFields=[
+    ['adTop','togAdTop'],['adSidebar','togAdSide'],['adInContent','togAdContent'],
+    ['adBelowHero','togAdHero'],['adMid','togAdMid'],['adPreDownload','togAdPreDl'],['adFooter','togAdFooter']
+  ];
+  for(const [field,tog] of adFields){
+    const on=document.getElementById(tog).classList.contains('on');
+    await upsert(field,on?document.getElementById(field).value:'');
+  }
+  toast('✅ Ads saved!');
+}
+
 function changePassword(){
   const cur=document.getElementById('pwCurrent').value,nw=document.getElementById('pwNew').value,cf=document.getElementById('pwConfirm').value;
   const c=getCreds();if(cur!==c.pass){toast('Wrong current password!',true);return;}
@@ -572,53 +765,88 @@ async function saveReply(id){await sb.from('feedbacks').update({admin_reply:docu
 async function deleteFeedback(id){if(!confirm('Delete?'))return;await sb.from('feedbacks').delete().eq('id',id);renderFeedbackList();toast('🗑️ Deleted!');}
 async function clearAllFeedback(){if(!confirm('Delete ALL feedback?'))return;await sb.from('feedbacks').delete().gt('id',0);renderFeedbackList();toast('🗑️ Cleared!');}
 
-// ANALYTICS
+// ANALYTICS - FULL VERSION
 async function loadAnalytics(){
   try{
     const now=new Date();
     const today=now.toISOString().split('T')[0];
     const yesterday=new Date(now-86400000).toISOString().split('T')[0];
     const thisMonth=now.toISOString().slice(0,7);
-
-    const {data:allData}=await sb.from('analytics').select('*').order('created_at',{ascending:false});
-    if(!allData){return;}
-
-    const todayCount=allData.filter(r=>r.date===today).length;
-    const yestCount=allData.filter(r=>r.date===yesterday).length;
-    const monthCount=allData.filter(r=>r.month===thisMonth).length;
-    // This week
     const weekStart=new Date(now);weekStart.setDate(now.getDate()-now.getDay());
     const weekStartStr=weekStart.toISOString().split('T')[0];
-    const weekCount=allData.filter(r=>r.date>=weekStartStr).length;
+
+    const {data:allData}=await sb.from('analytics').select('*').order('created_at',{ascending:false});
+    if(!allData)return;
+
+    // Separate visits vs post views vs downloads
+    const visits=allData.filter(r=>r.page&&!r.page.startsWith('view_')&&!r.page.startsWith('dl_'));
+    const postViews=allData.filter(r=>r.page&&r.page.startsWith('view_'));
+    const downloads=allData.filter(r=>r.page&&r.page.startsWith('dl_'));
+
+    const todayCount=visits.filter(r=>r.date===today).length;
+    const yestCount=visits.filter(r=>r.date===yesterday).length;
+    const monthCount=visits.filter(r=>r.month===thisMonth).length;
+    const weekCount=visits.filter(r=>r.date>=weekStartStr).length;
 
     document.getElementById('an-today').textContent=todayCount;
     document.getElementById('an-yesterday').textContent=yestCount;
     document.getElementById('an-week').textContent=weekCount;
     document.getElementById('an-month').textContent=monthCount;
-    document.getElementById('an-total').textContent=allData.length;
+    document.getElementById('an-total').textContent=visits.length;
+    document.getElementById('an-downloads').textContent=downloads.length;
+    document.getElementById('an-views').textContent=postViews.length;
 
-    // 7 day bar chart
+    // 7 day chart
     const days7=[];for(let i=6;i>=0;i--){const d=new Date(now-i*86400000);days7.push({date:d.toISOString().split('T')[0],label:d.toLocaleDateString('en',{weekday:'short'}),count:0});}
-    allData.forEach(r=>{const d=days7.find(x=>x.date===r.date);if(d)d.count++;});
+    visits.forEach(r=>{const d=days7.find(x=>x.date===r.date);if(d)d.count++;});
     const max7=Math.max(...days7.map(d=>d.count),1);
     document.getElementById('barChart7').innerHTML=days7.map(d=>`<div class="bar-wrap"><div class="bar-val">${d.count}</div><div class="bar" style="height:${Math.round((d.count/max7)*100)}px"></div><div class="bar-label">${d.label}</div></div>`).join('');
 
     // 6 month chart
     const months6=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const m=d.toISOString().slice(0,7);months6.push({month:m,label:d.toLocaleDateString('en',{month:'short'}),count:0});}
-    allData.forEach(r=>{const m=months6.find(x=>x.month===r.month);if(m)m.count++;});
+    visits.forEach(r=>{const m=months6.find(x=>x.month===r.month);if(m)m.count++;});
     const max6=Math.max(...months6.map(m=>m.count),1);
     document.getElementById('barChart6m').innerHTML=months6.map(m=>`<div class="bar-wrap"><div class="bar-val">${m.count}</div><div class="bar" style="height:${Math.round((m.count/max6)*100)}px;background:linear-gradient(180deg,var(--neon2),var(--accent));"></div><div class="bar-label">${m.label}</div></div>`).join('');
 
     // Device breakdown
-    const mobile=allData.filter(r=>r.device==='mobile').length;
-    const desktop=allData.filter(r=>r.device==='desktop').length;
-    const total=allData.length||1;
+    const mobile=visits.filter(r=>r.device==='mobile').length;
+    const desktop=visits.filter(r=>r.device==='desktop').length;
+    const total=visits.length||1;
     document.getElementById('deviceChart').innerHTML=`
       <div class="device-row"><div class="device-name">📱 Mobile</div><div class="device-bar-wrap"><div class="device-bar" style="width:${Math.round(mobile/total*100)}%"></div></div><div class="device-count">${mobile}</div></div>
       <div class="device-row"><div class="device-name">💻 Desktop</div><div class="device-bar-wrap"><div class="device-bar" style="width:${Math.round(desktop/total*100)}%;background:linear-gradient(90deg,var(--neon2),var(--accent));"></div></div><div class="device-count">${desktop}</div></div>`;
+
+    // Traffic source
+    const sources={direct:0,search:0,telegram:0,youtube:0,facebook:0,referral:0};
+    visits.forEach(r=>{if(sources.hasOwnProperty(r.page))sources[r.page]++;else if(r.page)sources.referral++;else sources.direct++;});
+    const srcTotal=visits.length||1;
+    const srcColors={'direct':'var(--neon)','search':'var(--green)','telegram':'#29b5e8','youtube':'#ff0000','facebook':'#1877f2','referral':'var(--neon2)'};
+    document.getElementById('sourceChart').innerHTML=Object.entries(sources).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="device-row"><div class="device-name" style="width:90px;">🔗 ${k.charAt(0).toUpperCase()+k.slice(1)}</div><div class="device-bar-wrap"><div class="device-bar" style="width:${Math.round(v/srcTotal*100)}%;background:${srcColors[k]||'var(--neon)'};"></div></div><div class="device-count">${v}</div></div>`).join('')||'<div style="color:var(--muted);font-size:13px;padding:10px;">No data yet</div>';
+
+    // Top countries
+    const countries={};visits.forEach(r=>{if(r.country&&r.country!=='Unknown'&&r.country!=='')countries[r.country]=(countries[r.country]||0)+1;});
+    const topC=Object.entries(countries).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const maxC=topC[0]?.[1]||1;
+    document.getElementById('countryChart').innerHTML=topC.length?topC.map(([c,v])=>`<div class="device-row"><div class="device-name">🌍 ${c}</div><div class="device-bar-wrap"><div class="device-bar" style="width:${Math.round(v/maxC*100)}%;background:linear-gradient(90deg,var(--green),var(--neon));"></div></div><div class="device-count">${v}</div></div>`).join(''):'<div style="color:var(--muted);font-size:13px;padding:10px;">No country data yet</div>';
+
+    // Top posts by views
+    const viewCounts={};postViews.forEach(r=>{const id=r.page.replace('view_','');viewCounts[id]=(viewCounts[id]||0)+1;});
+    const topViews=Object.entries(viewCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    if(topViews.length){
+      const {data:pData}=await sb.from('posts').select('id,title').in('id',topViews.map(([id])=>parseInt(id)));
+      document.getElementById('topPostsViews').innerHTML=topViews.map(([id,v],i)=>{const p=pData?.find(x=>x.id===parseInt(id));return `<div class="top-post-row"><div class="top-rank">${i+1}</div><div class="top-title">${p?.title||'Post #'+id}</div><div class="top-val">👁 ${v}</div></div>`;}).join('');
+    }else{document.getElementById('topPostsViews').innerHTML='<div style="color:var(--muted);font-size:13px;padding:10px;">No view data yet</div>';}
+
+    // Top posts by downloads
+    const dlCounts={};downloads.forEach(r=>{const id=r.page.replace('dl_','');dlCounts[id]=(dlCounts[id]||0)+1;});
+    const topDl=Object.entries(dlCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    if(topDl.length){
+      const {data:pData}=await sb.from('posts').select('id,title').in('id',topDl.map(([id])=>parseInt(id)));
+      document.getElementById('topPostsDl').innerHTML=topDl.map(([id,v],i)=>{const p=pData?.find(x=>x.id===parseInt(id));return `<div class="top-post-row"><div class="top-rank">${i+1}</div><div class="top-title">${p?.title||'Post #'+id}</div><div class="top-val">⬇ ${v}</div></div>`;}).join('');
+    }else{document.getElementById('topPostsDl').innerHTML='<div style="color:var(--muted);font-size:13px;padding:10px;">No download data yet</div>';}
+
   }catch(e){console.log('Analytics error',e);}
 }
-
 async function clearAnalytics(){if(!confirm('Clear all analytics data?'))return;await sb.from('analytics').delete().gt('id',0);loadAnalytics();toast('🗑️ Analytics cleared!');}
 
 // DASHBOARD
@@ -632,15 +860,18 @@ async function refreshDash(){
       sb.from('tutorials').select('*',{count:'exact',head:true}),
       sb.from('feedbacks').select('id'),
       sb.from('posts').select('likes'),
-      sb.from('analytics').select('date,month')
+      sb.from('analytics').select('date,month,page')
     ]);
+    const visits=analytics?.filter(r=>r.page&&!r.page.startsWith('view_')&&!r.page.startsWith('dl_'))||[];
+    const dls=analytics?.filter(r=>r.page&&r.page.startsWith('dl_'))||[];
     document.getElementById('dash-posts').textContent=postCount||0;
     document.getElementById('dash-tutorials').textContent=tutCount||0;
     document.getElementById('dash-feedback').textContent=fbs?.length||0;
     document.getElementById('dash-likes').textContent=posts?.reduce((s,p)=>s+(p.likes||0),0)||0;
-    document.getElementById('dash-today').textContent=analytics?.filter(r=>r.date===today).length||0;
-    document.getElementById('dash-month').textContent=analytics?.filter(r=>r.month===thisMonth).length||0;
-    document.getElementById('dash-total').textContent=analytics?.length||0;
+    document.getElementById('dash-today').textContent=visits.filter(r=>r.date===today).length;
+    document.getElementById('dash-month').textContent=visits.filter(r=>r.month===thisMonth).length;
+    document.getElementById('dash-total').textContent=visits.length;
+    document.getElementById('dash-downloads').textContent=dls.length;
   }catch(e){console.log(e);}
 }
 
