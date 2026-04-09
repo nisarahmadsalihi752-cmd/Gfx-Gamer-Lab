@@ -5,26 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GFX Gamer Lab — Admin Panel</title>
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
             --primary: #667eea;
             --danger: #ff4757;
             --success: #26de81;
-            --warning: #feca57;
             --dark: #1a1f3a;
             --card-bg: #242b4a;
             --bg: #0f1422;
@@ -34,12 +25,11 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
         }
         
-        /* Login Screen */
         .login-screen {
             display: flex;
             justify-content: center;
@@ -54,19 +44,15 @@
             border-radius: 15px;
             max-width: 400px;
             width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        
-        .login-logo {
-            text-align: center;
-            margin-bottom: 30px;
         }
         
         .login-logo h1 {
+            text-align: center;
             font-size: 1.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
         }
         
         .form-group {
@@ -90,12 +76,10 @@
             border-radius: 8px;
             color: var(--text);
             font-size: 1rem;
-            transition: all 0.3s;
         }
         
         .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -139,7 +123,6 @@
             display: none;
         }
         
-        /* Admin Panel */
         .admin-container {
             display: none;
         }
@@ -200,6 +183,7 @@
             flex: 1;
             padding: 30px;
             overflow-y: auto;
+            max-height: calc(100vh - 70px);
         }
         
         .section {
@@ -251,6 +235,57 @@
             border-bottom: 2px solid var(--border);
         }
         
+        /* Dynamic Buttons */
+        .button-list {
+            margin-top: 15px;
+        }
+        
+        .button-item {
+            background: var(--dark);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .button-item input {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: var(--text);
+        }
+        
+        .button-item button {
+            padding: 10px 15px;
+            background: var(--danger);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .add-button-btn {
+            padding: 10px 20px;
+            background: var(--success);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .section-header {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 3px solid var(--primary);
+        }
+        
         .toggle-switch {
             position: relative;
             width: 50px;
@@ -296,28 +331,26 @@
             transform: translateX(26px);
         }
         
-        .image-upload {
-            border: 2px dashed var(--border);
-            padding: 40px;
-            text-align: center;
+        .ad-section {
+            background: var(--dark);
+            padding: 20px;
             border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
+            margin-bottom: 20px;
+            border-left: 3px solid var(--primary);
         }
         
-        .image-upload:hover {
-            border-color: var(--primary);
+        .ad-section h4 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .ad-help {
             background: rgba(102, 126, 234, 0.1);
-        }
-        
-        .image-preview {
-            margin-top: 15px;
-        }
-        
-        .image-preview img {
-            max-width: 200px;
-            max-height: 200px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
         
         .post-item {
@@ -363,28 +396,6 @@
             border-bottom: 1px solid var(--border);
         }
         
-        .ad-section {
-            background: var(--dark);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 3px solid var(--primary);
-        }
-        
-        .ad-section h4 {
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-        
-        .ad-help {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        
         @media (max-width: 768px) {
             .sidebar {
                 display: none;
@@ -392,6 +403,11 @@
             
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .button-item {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
@@ -439,7 +455,7 @@
                     <li><a href="#" onclick="showSection('addPost')">➕ Add Post</a></li>
                     <li><a href="#" onclick="showSection('managePosts')">📋 Manage Posts</a></li>
                     <li><a href="#" onclick="showSection('social')">📱 Social Links</a></li>
-                    <li><a href="#" onclick="showSection('ads')">📢 Ads (Adsterra)</a></li>
+                    <li><a href="#" onclick="showSection('ads')">📢 Ads</a></li>
                     <li><a href="#" onclick="showSection('settings')">⚙️ Settings</a></li>
                 </ul>
             </aside>
@@ -470,7 +486,7 @@
                 
                 <!-- Analytics Section -->
                 <section id="analytics" class="section">
-                    <h2>📈 FULL ANALYTICS</h2>
+                    <h2>📈 ANALYTICS</h2>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-value" id="analyticsToday">0</div>
@@ -535,17 +551,13 @@
                             </div>
                             
                             <div class="form-group">
-                                <label>🖼️ THUMBNAIL</label>
-                                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                                    <button type="button" class="btn" onclick="document.getElementById('thumbnailFile').click()">📁 Upload File</button>
-                                    <button type="button" class="btn" onclick="toggleImageUrlInput()">🔗 Use Image URL</button>
-                                </div>
-                                <input type="file" id="thumbnailFile" accept="image/*" style="display: none;" onchange="handleThumbnailUpload(event)">
-                                <div id="imageUrlInput" style="display: none; margin-top: 10px;">
-                                    <input type="url" id="thumbnailUrl" placeholder="Paste image URL (e.g., from imgbb.com)" style="width: 100%; padding: 10px; background: var(--dark); border: 2px solid var(--border); border-radius: 8px; color: var(--text);">
-                                    <small style="color: var(--text-muted); display: block; margin-top: 5px;">Upload to imgbb.com and paste direct image URL here</small>
-                                </div>
-                                <div class="image-preview" id="thumbnailPreview"></div>
+                                <label>🖼️ THUMBNAIL URL *</label>
+                                <input type="url" id="thumbnailUrl" placeholder="https://i.ibb.co/... (from imgbb.com)" required>
+                                <small style="color: var(--text-muted);">Upload to imgbb.com and paste direct image URL</small>
+                            </div>
+                            
+                            <div class="section-header">
+                                <h4>🎬 VIDEO (Optional)</h4>
                             </div>
                             
                             <div class="form-group">
@@ -554,41 +566,51 @@
                             </div>
                             
                             <div class="form-group">
-                                <label>⬇️ MAIN DOWNLOAD LINK</label>
-                                <input type="url" id="downloadLink">
+                                <label>📹 DIRECT VIDEO URL (MP4, WebM, etc.)</label>
+                                <input type="url" id="directVideoUrl" placeholder="https://example.com/video.mp4">
+                                <small style="color: var(--text-muted);">Video hosting sites like Vimeo, Streamable, or any direct video link</small>
                             </div>
                             
-                            <div class="form-group">
-                                <label>MAIN BUTTON TITLE (Optional)</label>
-                                <input type="text" id="downloadLinkTitle" placeholder="e.g., ⬇️ DOWNLOAD NOW">
+                            <div class="section-header">
+                                <h4>⬇️ DOWNLOAD BUTTONS (Unlimited)</h4>
+                                <p style="margin-top: 10px; font-size: 0.9rem;">Add as many download buttons as you want. Each button gets ads on first click!</p>
                             </div>
                             
-                            <div class="form-group">
-                                <label>⬇️ ALT DOWNLOAD LINK 2</label>
-                                <input type="url" id="altDownloadLink">
+                            <div id="downloadButtonsList" class="button-list"></div>
+                            <button type="button" class="add-button-btn" onclick="addDownloadButton()">+ ADD DOWNLOAD BUTTON</button>
+                            
+                            <div class="section-header" style="margin-top: 30px;">
+                                <h4>🔗 EXTRA BUTTONS (Optional - Unlimited)</h4>
+                                <p style="margin-top: 10px; font-size: 0.9rem;">Apply Process, Facebook, Telegram, or any external links. Ads open on first click!</p>
                             </div>
                             
-                            <div class="form-group">
-                                <label>ALT BUTTON TITLE (Optional)</label>
-                                <input type="text" id="altDownloadLinkTitle" placeholder="e.g., Mirror Link">
+                            <div id="extraButtonsList" class="button-list"></div>
+                            <button type="button" class="add-button-btn" onclick="addExtraButton()">+ ADD EXTRA BUTTON</button>
+                            
+                            <div class="section-header" style="margin-top: 30px;">
+                                <h4>📲 SOCIAL SHARE LINKS (Optional)</h4>
                             </div>
                             
                             <div class="form-group">
                                 <label>✈ TELEGRAM LINK</label>
-                                <input type="url" id="telegramLink">
+                                <input type="url" id="telegramLink" placeholder="https://t.me/...">
                             </div>
                             
                             <div class="form-group">
                                 <label>💬 WHATSAPP LINK</label>
-                                <input type="url" id="whatsappLink">
+                                <input type="url" id="whatsappLink" placeholder="https://wa.me/...">
+                            </div>
+                            
+                            <div class="section-header" style="margin-top: 30px;">
+                                <h4>🔍 SEO TAGS (Optional)</h4>
                             </div>
                             
                             <div class="form-group">
-                                <label>🔍 SEO TAGS (comma separated)</label>
+                                <label>SEO TAGS (comma separated)</label>
                                 <input type="text" id="seoTags" placeholder="config, gfx tool, pubg, 90fps">
                             </div>
                             
-                            <div style="display: flex; gap: 15px;">
+                            <div style="display: flex; gap: 15px; margin-top: 30px;">
                                 <button type="submit" class="btn btn-success">💾 SAVE POST</button>
                                 <button type="button" class="btn" onclick="clearPostForm()">🗑️ CLEAR</button>
                             </div>
@@ -596,30 +618,30 @@
                     </div>
                 </section>
                 
-                <!-- Manage Posts Section -->
+                <!-- Manage Posts -->
                 <section id="managePosts" class="section">
                     <h2>📋 MANAGE POSTS</h2>
                     <div id="postsListContainer">Loading...</div>
                 </section>
                 
-                <!-- Social Links Section -->
+                <!-- Social Links -->
                 <section id="social" class="section">
                     <h2>📱 SOCIAL LINKS</h2>
                     <div class="card">
                         <form id="socialForm" onsubmit="return saveSocialLinks(event)">
                             <div class="form-group">
                                 <label>▶ YOUTUBE</label>
-                                <input type="url" id="socialYoutube" placeholder="https://youtube.com/@...">
+                                <input type="url" id="socialYoutube">
                             </div>
                             
                             <div class="form-group">
-                                <label>✈ TELEGRAM CHANNEL</label>
-                                <input type="url" id="socialTelegram" placeholder="https://t.me/...">
+                                <label>✈ TELEGRAM</label>
+                                <input type="url" id="socialTelegram">
                             </div>
                             
                             <div class="form-group">
-                                <label>💬 WHATSAPP CHANNEL</label>
-                                <input type="url" id="socialWhatsapp" placeholder="https://wa.me/...">
+                                <label>💬 WHATSAPP</label>
+                                <input type="url" id="socialWhatsapp">
                             </div>
                             
                             <button type="submit" class="btn btn-success">💾 SAVE</button>
@@ -627,149 +649,121 @@
                     </div>
                 </section>
                 
-                <!-- Ads Section -->
+                <!-- Ads -->
                 <section id="ads" class="section">
-                    <h2>📢 ADSTERRA ADS MANAGEMENT</h2>
-                    
-                    <p style="color: var(--text-muted); margin-bottom: 30px;">
-                        Add your Adsterra ad codes below. Toggle each ad ON/OFF to control visibility on your website.
-                    </p>
+                    <h2>📢 ADS MANAGEMENT</h2>
                     
                     <form id="adsForm" onsubmit="return saveAds(event)">
-                        <!-- Smartlink -->
                         <div class="ad-section">
-                            <h4>🔗 SMARTLINK (First Download Click)</h4>
+                            <h4>🔗 SMARTLINK (Download Buttons - First Click)</h4>
                             <div class="form-group">
                                 <label>Smartlink URL *</label>
-                                <input type="url" id="smartlink" placeholder="https://your-smartlink-url.com">
+                                <input type="url" id="smartlink">
                             </div>
                             <div class="form-group">
                                 <label>
-                                    <input type="checkbox" id="smartlinkEnabled"> Enable Smartlink
+                                    <input type="checkbox" id="smartlinkEnabled"> Enable
                                 </label>
                             </div>
                             <div class="ad-help">
-                                ⭐ <strong>Highest Earning!</strong> Opens when user clicks download first time. Second click starts download.
+                                ⭐ Opens when user clicks any DOWNLOAD button first time
                             </div>
                         </div>
                         
-                        <!-- Top Banner -->
                         <div class="ad-section">
-                            <h4>1️⃣ TOP BANNER AD</h4>
+                            <h4>🔗 EXTERNAL LINK AD (Extra Buttons - First Click)</h4>
                             <div class="form-group">
-                                <label>Ad Code (728x90 or 320x50)</label>
-                                <textarea id="topBanner" rows="5" placeholder="Paste your Adsterra banner code here"></textarea>
+                                <label>External Link Ad URL *</label>
+                                <input type="url" id="externalLinkAd">
                             </div>
                             <div class="form-group">
                                 <label>
-                                    <input type="checkbox" id="topBannerEnabled"> Show on website
+                                    <input type="checkbox" id="externalLinkAdEnabled"> Enable
                                 </label>
                             </div>
                             <div class="ad-help">
-                                Shows at top of page. Use 728x90 for desktop, 320x50 for mobile.
+                                ⭐ Opens when user clicks any EXTRA button (Apply Process, Facebook, etc.) first time
                             </div>
                         </div>
                         
-                        <!-- Below Hero -->
                         <div class="ad-section">
-                            <h4>2️⃣ BELOW HERO AD</h4>
+                            <h4>1️⃣ TOP BANNER</h4>
                             <div class="form-group">
-                                <label>Ad Code (Native Banner Recommended)</label>
-                                <textarea id="belowHero" rows="5" placeholder="Paste ad code"></textarea>
+                                <textarea id="topBanner" rows="5"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>
-                                    <input type="checkbox" id="belowHeroEnabled"> Show on website
+                                    <input type="checkbox" id="topBannerEnabled"> Show
                                 </label>
-                            </div>
-                            <div class="ad-help">
-                                Shows between hero section and posts. Native banner works best here.
                             </div>
                         </div>
                         
-                        <!-- In Content -->
                         <div class="ad-section">
-                            <h4>3️⃣ IN-CONTENT AD</h4>
+                            <h4>2️⃣ BELOW HERO</h4>
                             <div class="form-group">
-                                <label>Ad Code (Native Banner)</label>
-                                <textarea id="inContent" rows="5" placeholder="Paste ad code"></textarea>
+                                <textarea id="belowHero" rows="5"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>
-                                    <input type="checkbox" id="inContentEnabled"> Show on website
+                                    <input type="checkbox" id="belowHeroEnabled"> Show
                                 </label>
-                            </div>
-                            <div class="ad-help">
-                                Shows in middle of posts grid. Blends well with content.
                             </div>
                         </div>
                         
-                        <!-- Pre-Download -->
                         <div class="ad-section">
-                            <h4>4️⃣ PRE-DOWNLOAD AD (Countdown Screen)</h4>
+                            <h4>3️⃣ IN-CONTENT</h4>
                             <div class="form-group">
-                                <label>Ad Code (Any Format)</label>
-                                <textarea id="preDownload" rows="5" placeholder="Paste ad code"></textarea>
+                                <textarea id="inContent" rows="5"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>
-                                    <input type="checkbox" id="preDownloadEnabled"> Show on website
+                                    <input type="checkbox" id="inContentEnabled"> Show
                                 </label>
-                            </div>
-                            <div class="ad-help">
-                                ⭐ <strong>High Conversion!</strong> Shows during 5-second countdown before download.
                             </div>
                         </div>
                         
-                        <!-- Footer -->
                         <div class="ad-section">
-                            <h4>5️⃣ FOOTER AD</h4>
+                            <h4>4️⃣ PRE-DOWNLOAD</h4>
                             <div class="form-group">
-                                <label>Ad Code (Social Bar Recommended)</label>
-                                <textarea id="footer" rows="5" placeholder="Paste ad code"></textarea>
+                                <textarea id="preDownload" rows="5"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>
-                                    <input type="checkbox" id="footerEnabled"> Show on website
+                                    <input type="checkbox" id="preDownloadEnabled"> Show
                                 </label>
-                            </div>
-                            <div class="ad-help">
-                                Shows at bottom of page. Social bar ad format works well.
                             </div>
                         </div>
                         
-                        <button type="submit" class="btn btn-success" style="width: 100%; padding: 15px; font-size: 1.1rem;">💾 SAVE ALL ADS</button>
+                        <div class="ad-section">
+                            <h4>5️⃣ FOOTER</h4>
+                            <div class="form-group">
+                                <textarea id="footer" rows="5"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="footerEnabled"> Show
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-full">💾 SAVE ALL ADS</button>
                     </form>
-                    
-                    <div class="card" style="margin-top: 30px; background: rgba(102, 126, 234, 0.1);">
-                        <h3>💡 Adsterra Setup Guide</h3>
-                        <ol style="color: var(--text-muted); line-height: 1.8;">
-                            <li>Go to <a href="https://publishers.adsterra.com" target="_blank" style="color: var(--primary);">Adsterra Dashboard</a></li>
-                            <li>Create ads: Banner (728x90), Native Banner, Social Bar, Smartlink</li>
-                            <li>Copy ad code from each ad</li>
-                            <li>Paste codes in respective fields above</li>
-                            <li>Toggle ON the ads you want to show</li>
-                            <li>Save and check your website!</li>
-                        </ol>
-                        <p style="margin-top: 15px;"><strong>Pro Tip:</strong> Enable Smartlink + Pre-Download for maximum earnings!</p>
-                    </div>
                 </section>
                 
-                <!-- Settings Section -->
+                <!-- Settings -->
                 <section id="settings" class="section">
-                    <h2>⚙️ SITE SETTINGS</h2>
+                    <h2>⚙️ SETTINGS</h2>
                     <div class="card">
                         <form id="settingsForm" onsubmit="return saveSettings(event)">
                             <div class="form-group">
-                                <label>LOGO / PROFILE IMAGE</label>
-                                <input type="file" id="logoFile" accept="image/*" onchange="handleLogoUpload(event)">
-                                <div class="image-preview" id="logoPreview"></div>
+                                <label>LOGO URL *</label>
+                                <input type="url" id="logoUrl" placeholder="https://i.ibb.co/... (from imgbb.com)" required>
+                                <small style="color: var(--text-muted);">Upload to imgbb.com, copy direct image link, paste here</small>
                             </div>
                             
                             <div class="form-group">
                                 <label>SOCIAL BUTTONS BACKGROUND IMAGE (Optional)</label>
                                 <input type="url" id="socialBackgroundImage" placeholder="https://i.ibb.co/...">
-                                <small style="color: var(--text-muted);">Image will show behind YouTube/Telegram/WhatsApp buttons</small>
                             </div>
                             
                             <div class="form-group">
@@ -778,12 +772,11 @@
                             </div>
                             
                             <div class="form-group">
-                                <label>ANNOUNCEMENT BAR TEXT</label>
-                                <input type="text" id="announcementText" placeholder="🔥 New Config ● ⚡ 90FPS Available">
-                                <small style="color: var(--text-muted);">Use ● to separate items</small>
+                                <label>ANNOUNCEMENT TEXT</label>
+                                <input type="text" id="announcementText" placeholder="🔥 New ● ⚡ 90FPS">
                             </div>
                             
-                            <button type="submit" class="btn btn-success">💾 SAVE SETTINGS</button>
+                            <button type="submit" class="btn btn-success">💾 SAVE</button>
                         </form>
                     </div>
                 </section>
@@ -800,12 +793,13 @@
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
         
         const ADMIN_EMAIL = "nisarahmad.salihi752@gmail.com";
         const ADMIN_PASSWORD = "nisar03746906@N";
         
-        // Check login
+        let downloadButtons = [];
+        let extraButtons = [];
+        
         window.addEventListener('DOMContentLoaded', () => {
             const loggedIn = localStorage.getItem('gfx_admin_logged_in');
             if (loggedIn === 'true') {
@@ -815,10 +809,8 @@
             }
         });
         
-        // Login
         async function handleLogin(e) {
             e.preventDefault();
-            
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
@@ -833,17 +825,14 @@
                     document.getElementById('loginError').style.display = 'none';
                 }, 3000);
             }
-            
             return false;
         }
         
-        // Logout
         function logout() {
             localStorage.removeItem('gfx_admin_logged_in');
             location.reload();
         }
         
-        // Show Section
         function showSection(sectionId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
@@ -859,7 +848,6 @@
             if (sectionId === 'settings') loadSiteSettings();
         }
         
-        // Load Dashboard
         async function loadDashboard() {
             try {
                 const postsSnapshot = await db.collection('posts').get();
@@ -889,11 +877,10 @@
                 document.getElementById('dashMonthVisits').textContent = monthTotal;
                 
             } catch (error) {
-                console.error('Error loading dashboard:', error);
+                console.error('Error:', error);
             }
         }
         
-        // Load Analytics
         async function loadAnalytics() {
             try {
                 const today = new Date().toISOString().split('T')[0];
@@ -938,11 +925,10 @@
                 await loadSourcesTable();
                 
             } catch (error) {
-                console.error('Error loading analytics:', error);
+                console.error('Error:', error);
             }
         }
         
-        // Load Charts
         async function loadVisitsChart() {
             const last7Days = [];
             const visitCounts = [];
@@ -972,9 +958,7 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
         }
@@ -1005,9 +989,7 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
         }
@@ -1035,45 +1017,81 @@
                 `).join('');
         }
         
-        // Post Management
-        let currentThumbnailUrl = '';
-        
-        function toggleImageUrlInput() {
-            const input = document.getElementById('imageUrlInput');
-            input.style.display = input.style.display === 'none' ? 'block' : 'none';
+        // Download Buttons
+        function addDownloadButton() {
+            const id = Date.now();
+            downloadButtons.push({ id, title: '', url: '' });
+            renderDownloadButtons();
         }
         
-        async function handleThumbnailUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            try {
-                const storageRef = storage.ref(`thumbnails/${Date.now()}_${file.name}`);
-                await storageRef.put(file);
-                currentThumbnailUrl = await storageRef.getDownloadURL();
-                
-                document.getElementById('thumbnailPreview').innerHTML = `<img src="${currentThumbnailUrl}" alt="Preview">`;
-            } catch (error) {
-                console.error('Error uploading:', error);
-                alert('Error uploading image. Try using imgbb.com URL instead.');
-            }
+        function removeDownloadButton(id) {
+            downloadButtons = downloadButtons.filter(b => b.id !== id);
+            renderDownloadButtons();
+        }
+        
+        function renderDownloadButtons() {
+            const container = document.getElementById('downloadButtonsList');
+            container.innerHTML = downloadButtons.map(btn => `
+                <div class="button-item">
+                    <input type="text" placeholder="Button Title (e.g., ⬇️ DOWNLOAD)" 
+                           value="${btn.title}" 
+                           onchange="updateDownloadButton(${btn.id}, 'title', this.value)">
+                    <input type="url" placeholder="Download URL" 
+                           value="${btn.url}" 
+                           onchange="updateDownloadButton(${btn.id}, 'url', this.value)">
+                    <button onclick="removeDownloadButton(${btn.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+        
+        function updateDownloadButton(id, field, value) {
+            const btn = downloadButtons.find(b => b.id === id);
+            if (btn) btn[field] = value;
+        }
+        
+        // Extra Buttons
+        function addExtraButton() {
+            const id = Date.now();
+            extraButtons.push({ id, title: '', url: '' });
+            renderExtraButtons();
+        }
+        
+        function removeExtraButton(id) {
+            extraButtons = extraButtons.filter(b => b.id !== id);
+            renderExtraButtons();
+        }
+        
+        function renderExtraButtons() {
+            const container = document.getElementById('extraButtonsList');
+            container.innerHTML = extraButtons.map(btn => `
+                <div class="button-item">
+                    <input type="text" placeholder="Button Title (e.g., 📝 Apply Process, 📘 Facebook)" 
+                           value="${btn.title}" 
+                           onchange="updateExtraButton(${btn.id}, 'title', this.value)">
+                    <input type="url" placeholder="External URL" 
+                           value="${btn.url}" 
+                           onchange="updateExtraButton(${btn.id}, 'url', this.value)">
+                    <button onclick="removeExtraButton(${btn.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+        
+        function updateExtraButton(id, field, value) {
+            const btn = extraButtons.find(b => b.id === id);
+            if (btn) btn[field] = value;
         }
         
         async function savePost(e) {
             e.preventDefault();
             
-            const imageUrl = document.getElementById('thumbnailUrl').value;
-            const thumbnailUrl = imageUrl || currentThumbnailUrl;
-            
             const postData = {
                 title: document.getElementById('postTitle').value,
                 description: document.getElementById('postDescription').value,
-                thumbnailUrl,
+                thumbnailUrl: document.getElementById('thumbnailUrl').value,
                 youtubeLink: document.getElementById('youtubeLink').value,
-                downloadLink: document.getElementById('downloadLink').value,
-                downloadLinkTitle: document.getElementById('downloadLinkTitle').value,
-                altDownloadLink: document.getElementById('altDownloadLink').value,
-                altDownloadLinkTitle: document.getElementById('altDownloadLinkTitle').value,
+                directVideoUrl: document.getElementById('directVideoUrl').value,
+                downloadButtons: downloadButtons.filter(b => b.url),
+                extraButtons: extraButtons.filter(b => b.url),
                 telegramLink: document.getElementById('telegramLink').value,
                 whatsappLink: document.getElementById('whatsappLink').value,
                 tags: document.getElementById('seoTags').value,
@@ -1107,9 +1125,10 @@
         function clearPostForm() {
             document.getElementById('postForm').reset();
             document.getElementById('editPostId').value = '';
-            document.getElementById('thumbnailPreview').innerHTML = '';
-            document.getElementById('thumbnailUrl').value = '';
-            currentThumbnailUrl = '';
+            downloadButtons = [];
+            extraButtons = [];
+            renderDownloadButtons();
+            renderExtraButtons();
         }
         
         async function loadPostsList() {
@@ -1123,10 +1142,14 @@
                         <div class="post-item">
                             <div>
                                 <h4>${post.title}</h4>
-                                <small style="color: var(--text-muted);">👁️ ${post.views || 0} • ⬇️ ${post.downloads || 0}</small>
+                                <small style="color: var(--text-muted);">
+                                    👁️ ${post.views || 0} • ⬇️ ${post.downloads || 0} • 
+                                    ${(post.downloadButtons || []).length} download buttons • 
+                                    ${(post.extraButtons || []).length} extra buttons
+                                </small>
                             </div>
                             <div class="post-actions">
-                                <button class="btn btn-primary" onclick="editPost('${doc.id}')">✏️ Edit</button>
+                                <button class="btn btn-primary" onclick="editPost('${doc.id}')">✏️</button>
                                 <button class="btn btn-danger" onclick="deletePost('${doc.id}')">🗑️</button>
                             </div>
                         </div>
@@ -1147,18 +1170,15 @@
                 document.getElementById('postDescription').value = post.description || '';
                 document.getElementById('thumbnailUrl').value = post.thumbnailUrl || '';
                 document.getElementById('youtubeLink').value = post.youtubeLink || '';
-                document.getElementById('downloadLink').value = post.downloadLink || '';
-                document.getElementById('downloadLinkTitle').value = post.downloadLinkTitle || '';
-                document.getElementById('altDownloadLink').value = post.altDownloadLink || '';
-                document.getElementById('altDownloadLinkTitle').value = post.altDownloadLinkTitle || '';
+                document.getElementById('directVideoUrl').value = post.directVideoUrl || '';
                 document.getElementById('telegramLink').value = post.telegramLink || '';
                 document.getElementById('whatsappLink').value = post.whatsappLink || '';
                 document.getElementById('seoTags').value = post.tags || '';
                 
-                if (post.thumbnailUrl) {
-                    document.getElementById('thumbnailPreview').innerHTML = `<img src="${post.thumbnailUrl}">`;
-                    currentThumbnailUrl = post.thumbnailUrl;
-                }
+                downloadButtons = post.downloadButtons || [];
+                extraButtons = post.extraButtons || [];
+                renderDownloadButtons();
+                renderExtraButtons();
                 
                 showSection('addPost');
             } catch (error) {
@@ -1167,18 +1187,16 @@
         }
         
         async function deletePost(postId) {
-            if (!confirm('Delete this post?')) return;
-            
+            if (!confirm('Delete?')) return;
             try {
                 await db.collection('posts').doc(postId).delete();
-                alert('✅ Post deleted!');
+                alert('✅ Deleted!');
                 loadPostsList();
             } catch (error) {
                 console.error('Error:', error);
             }
         }
         
-        // Social Links
         async function loadSocialLinks() {
             try {
                 const doc = await db.collection('settings').doc('social').get();
@@ -1195,44 +1213,36 @@
         
         async function saveSocialLinks(e) {
             e.preventDefault();
-            
             try {
                 await db.collection('settings').doc('social').set({
                     youtube: document.getElementById('socialYoutube').value,
                     telegram: document.getElementById('socialTelegram').value,
                     whatsapp: document.getElementById('socialWhatsapp').value
                 });
-                
-                alert('✅ Social links saved!');
+                alert('✅ Saved!');
             } catch (error) {
                 console.error('Error:', error);
             }
-            
             return false;
         }
         
-        // Ads
         async function loadAds() {
             try {
                 const doc = await db.collection('settings').doc('ads').get();
                 if (doc.exists) {
                     const data = doc.data();
-                    
                     document.getElementById('smartlink').value = data.smartlink || '';
                     document.getElementById('smartlinkEnabled').checked = data.smartlinkEnabled || false;
-                    
+                    document.getElementById('externalLinkAd').value = data.externalLinkAd || '';
+                    document.getElementById('externalLinkAdEnabled').checked = data.externalLinkAdEnabled || false;
                     document.getElementById('topBanner').value = data.topBanner || '';
                     document.getElementById('topBannerEnabled').checked = data.topBannerEnabled || false;
-                    
                     document.getElementById('belowHero').value = data.belowHero || '';
                     document.getElementById('belowHeroEnabled').checked = data.belowHeroEnabled || false;
-                    
                     document.getElementById('inContent').value = data.inContent || '';
                     document.getElementById('inContentEnabled').checked = data.inContentEnabled || false;
-                    
                     document.getElementById('preDownload').value = data.preDownload || '';
                     document.getElementById('preDownloadEnabled').checked = data.preDownloadEnabled || false;
-                    
                     document.getElementById('footer').value = data.footer || '';
                     document.getElementById('footerEnabled').checked = data.footerEnabled || false;
                 }
@@ -1243,54 +1253,28 @@
         
         async function saveAds(e) {
             e.preventDefault();
-            
             try {
                 await db.collection('settings').doc('ads').set({
                     smartlink: document.getElementById('smartlink').value,
                     smartlinkEnabled: document.getElementById('smartlinkEnabled').checked,
-                    
+                    externalLinkAd: document.getElementById('externalLinkAd').value,
+                    externalLinkAdEnabled: document.getElementById('externalLinkAdEnabled').checked,
                     topBanner: document.getElementById('topBanner').value,
                     topBannerEnabled: document.getElementById('topBannerEnabled').checked,
-                    
                     belowHero: document.getElementById('belowHero').value,
                     belowHeroEnabled: document.getElementById('belowHeroEnabled').checked,
-                    
                     inContent: document.getElementById('inContent').value,
                     inContentEnabled: document.getElementById('inContentEnabled').checked,
-                    
                     preDownload: document.getElementById('preDownload').value,
                     preDownloadEnabled: document.getElementById('preDownloadEnabled').checked,
-                    
                     footer: document.getElementById('footer').value,
                     footerEnabled: document.getElementById('footerEnabled').checked
                 });
-                
-                alert('✅ All ads saved successfully!');
+                alert('✅ All ads saved!');
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error saving ads');
             }
-            
             return false;
-        }
-        
-        // Settings
-        let currentLogoUrl = '';
-        
-        async function handleLogoUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            try {
-                const storageRef = storage.ref(`logo/${Date.now()}_${file.name}`);
-                await storageRef.put(file);
-                currentLogoUrl = await storageRef.getDownloadURL();
-                
-                document.getElementById('logoPreview').innerHTML = `<img src="${currentLogoUrl}">`;
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error uploading logo');
-            }
         }
         
         async function loadSiteSettings() {
@@ -1298,13 +1282,10 @@
                 const doc = await db.collection('settings').doc('site').get();
                 if (doc.exists) {
                     const data = doc.data();
+                    document.getElementById('logoUrl').value = data.logo || '';
+                    document.getElementById('socialBackgroundImage').value = data.socialBackgroundImage || '';
                     document.getElementById('heroDescription').value = data.heroDescription || '';
                     document.getElementById('announcementText').value = data.announcementText || '';
-                    document.getElementById('socialBackgroundImage').value = data.socialBackgroundImage || '';
-                    
-                    if (data.logo) {
-                        document.getElementById('logoPreview').innerHTML = `<img src="${data.logo}">`;
-                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -1313,25 +1294,17 @@
         
         async function saveSettings(e) {
             e.preventDefault();
-            
             try {
-                const data = {
+                await db.collection('settings').doc('site').set({
+                    logo: document.getElementById('logoUrl').value,
+                    socialBackgroundImage: document.getElementById('socialBackgroundImage').value,
                     heroDescription: document.getElementById('heroDescription').value,
-                    announcementText: document.getElementById('announcementText').value,
-                    socialBackgroundImage: document.getElementById('socialBackgroundImage').value
-                };
-                
-                if (currentLogoUrl) {
-                    data.logo = currentLogoUrl;
-                }
-                
-                await db.collection('settings').doc('site').set(data, { merge: true });
-                
+                    announcementText: document.getElementById('announcementText').value
+                });
                 alert('✅ Settings saved!');
             } catch (error) {
                 console.error('Error:', error);
             }
-            
             return false;
         }
     </script>
