@@ -1,180 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GFX Gamer Lab — Admin Panel</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #667eea; --danger: #ff4757; --success: #26de81;
-            --warning: #feca57; --dark: #1a1f3a; --card-bg: #242b4a;
-            --bg: #0f1422; --text: #fff; --text-muted: #8b92b0; --border: #30363d;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: var(--dark); border-right: 1px solid var(--border); padding: 20px; }
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px; }
-        .form-control { width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; color: #fff; margin-bottom: 10px; }
-        .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: white; width: 100%; }
-        
-        /* New Link Items Styling */
-        .link-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border); position: relative; }
-        .add-btn { background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; }
-        .remove-btn { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; position: absolute; right: 10px; top: 10px; font-size: 12px; }
-        .section-hidden { display: none; }
+        /* Sirf naye buttons ke liye thodi styling */
+        .btn-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border); position: relative; }
+        .add-more-btn { background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 10px; }
+        .remove-btn { background: var(--danger); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; position: absolute; right: 10px; top: 10px; }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Gfx Gamer Lab</h2>
-        <br>
-        <div onclick="showSection('dashboard')" style="cursor:pointer; padding:10px;">Dashboard</div>
-        <div onclick="showSection('addPost')" style="cursor:pointer; padding:10px;">Add Post</div>
-        <div onclick="showSection('settings')" style="cursor:pointer; padding:10px;">Settings</div>
+    <div class="form-group">
+        <label>LOGO / PROFILE IMAGE</label>
+        <input type="file" id="logoFile" accept="image/*">
+        <p style="text-align:center; margin:5px 0;">- OR -</p>
+        <input type="text" id="logoUrlInput" class="form-control" placeholder="Paste Image URL here">
     </div>
 
-    <div class="main-content">
-        <div id="addPostSection" class="section">
-            <div class="card">
-                <h2>Add New Post</h2>
-                <br>
-                <form id="postForm">
-                    <div class="form-group">
-                        <label>POST TITLE</label>
-                        <input type="text" id="postTitle" class="form-control" placeholder="Enter title" required>
-                    </div>
-                    <div class="form-group">
-                        <label>CATEGORY</label>
-                        <select id="postCategory" class="form-control">
-                            <option value="Config">Config</option>
-                            <option value="GFX Tool">GFX Tool</option>
-                            <option value="Tutorial">Tutorial</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>DOWNLOAD BUTTONS</label>
-                        <div id="linksContainer">
-                            <div class="link-item">
-                                <input type="text" class="form-control link-url" placeholder="Link (Required)" required>
-                                <input type="text" class="form-control link-title" placeholder="Button Title (Optional - Default: Download)">
-                                <input type="text" class="form-control link-desc" placeholder="Button Description (Optional)">
-                            </div>
-                        </div>
-                        <button type="button" class="add-btn" onclick="addLinkField()">+ Add More Button</button>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Publish Post</button>
-                </form>
+    <div class="form-group">
+        <label>DOWNLOAD BUTTONS</label>
+        <div id="dynamicButtonsContainer">
+            <div class="btn-item">
+                <input type="text" class="form-control b-url" placeholder="Download Link (Required)" required>
+                <input type="text" class="form-control b-title" placeholder="Button Title (Optional)">
+                <input type="text" class="form-control b-desc" placeholder="Button Description (Optional)">
             </div>
         </div>
-
-        <div id="settingsSection" class="section section-hidden">
-            <div class="card">
-                <h2>Site Settings</h2>
-                <br>
-                <form id="settingsForm">
-                    <div class="form-group">
-                        <label>LOGO / PROFILE IMAGE</label>
-                        <input type="file" id="logoFile" class="form-control" accept="image/*">
-                        <div style="text-align: center; margin: 5px; font-weight: bold;">OR</div>
-                        <input type="text" id="logoExternalUrl" class="form-control" placeholder="Paste image link here (e.g. ImgBB link)">
-                    </div>
-                    <div class="form-group">
-                        <label>HERO DESCRIPTION</label>
-                        <textarea id="heroDescription" class="form-control" rows="4"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>ANNOUNCEMENT BAR TEXT</label>
-                        <input type="text" id="announcementText" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Settings</button>
-                </form>
-            </div>
-        </div>
+        <button type="button" class="add-more-btn" onclick="addNewButtonField()">+ Add More Button</button>
     </div>
 
     <script>
-        // Firebase Config (Yahan apna purana config paste karein)
-        const firebaseConfig = {
-            // Paste your actual config here
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.add('section-hidden'));
-            document.getElementById(sectionId + 'Section').classList.remove('section-hidden');
-        }
-
-        function addLinkField() {
-            const container = document.getElementById('linksContainer');
+        // Naya field add karne ka function
+        function addNewButtonField() {
+            const container = document.getElementById('dynamicButtonsContainer');
             const div = document.createElement('div');
-            div.className = 'link-item';
+            div.className = 'btn-item';
             div.innerHTML = `
                 <button type="button" class="remove-btn" onclick="this.parentElement.remove()">X</button>
-                <input type="text" class="form-control link-url" placeholder="Link (Required)" required>
-                <input type="text" class="form-control link-title" placeholder="Button Title (Optional)">
-                <input type="text" class="form-control link-desc" placeholder="Button Description (Optional)">
+                <input type="text" class="form-control b-url" placeholder="Download Link (Required)" style="margin-top:15px">
+                <input type="text" class="form-control b-title" placeholder="Button Title (Optional)">
+                <input type="text" class="form-control b-desc" placeholder="Button Description (Optional)">
             `;
             container.appendChild(div);
         }
 
-        // Post Save Logic
-        document.getElementById('postForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const linkItems = document.querySelectorAll('.link-item');
-            const linksArray = [];
-            
-            linkItems.forEach(item => {
-                const url = item.querySelector('.link-url').value;
+        // Save Settings mein Logo Link ki logic
+        async function saveSettings(e) {
+            const linkUrl = document.getElementById('logoUrlInput').value;
+            const data = { /* ... aapki purani fields ... */ };
+            if(linkUrl) data.logo = linkUrl;
+            // ... rest of the code
+        }
+
+        // Add Post mein Multi-Button logic
+        async function handleAddPost(e) {
+            const btnElements = document.querySelectorAll('.btn-item');
+            const buttonsData = [];
+            btnElements.forEach(el => {
+                const url = el.querySelector('.b-url').value;
                 if(url) {
-                    linksArray.push({
+                    buttonsData.push({
                         url: url,
-                        title: item.querySelector('.link-title').value || 'Download Now',
-                        desc: item.querySelector('.link-desc').value || ''
+                        title: el.querySelector('.b-title').value || 'Download Now',
+                        desc: el.querySelector('.b-desc').value || ''
                     });
                 }
             });
-
-            const postData = {
-                title: document.getElementById('postTitle').value,
-                category: document.getElementById('postCategory').value,
-                links: linksArray,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            await db.collection('posts').add(postData);
-            alert('Post Published!');
-            e.target.reset();
-        });
-
-        // Settings Save Logic
-        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const extUrl = document.getElementById('logoExternalUrl').value;
-            let finalLogo = extUrl;
-
-            const settingsData = {
-                heroDescription: document.getElementById('heroDescription').value,
-                announcementText: document.getElementById('announcementText').value,
-                logo: finalLogo
-            };
-
-            await db.collection('settings').doc('site').set(settingsData, { merge: true });
-            alert('Settings Updated!');
-        });
+            // Ye buttonsData array Firestore mein save hoga
+        }
     </script>
 </body>
 </html>
